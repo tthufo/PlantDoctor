@@ -112,7 +112,7 @@ export default class login extends Component {
               {
                 !this.state.loading && (
                   <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didPressSubmit()}>
-                    <Text style={styles.regularText}>{'sfdsfds'}</Text>
+                    <Text style={styles.regularText}>{'Login'}</Text>
                   </Button>
                 )
               }
@@ -122,13 +122,13 @@ export default class login extends Component {
                 )
               }
               <Button testID="forgot_password_button" block transparent primary style={styles.btn_forgot_password} onPress={() => this.forgetPassword()}>
-                <Text style={styles.regularText}>{"sdfdsfds"}</Text>
+                <Text style={styles.regularText}>{"Forgot"}</Text>
               </Button>
 
             </View>
             <View style={{ width: '100%', alignItems: 'center' }}>
               <TouchableOpacity testID="register_button" style={styles.btn_register} onPress={() => this.didPressRegister()}>
-                <Text style={[styles.regularText, { color: 'rgb(74,144,226)' }]}>{'resigter'}</Text>
+                <Text style={{ color: 'black' }}>{'resigter'}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -138,7 +138,7 @@ export default class login extends Component {
   }
 
   didPressRegister() {
-    this.props.navigation.navigate("RegisterStep1");
+    this.props.navigation.navigate("Register");
   }
 
   forgetPassword() {
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   btn_register: {
     alignItems: 'center',
     borderRadius: 1,
-    borderColor: 'rgb(74,144,226)',
+    borderColor: 'black',
     borderWidth: 1,
     borderRadius: 50,
     width: 231,
@@ -253,7 +253,6 @@ const styles = StyleSheet.create({
     borderColor: "#979797"
   },
   regularText: {
-    // fontFamily: 'SourceHanSansHW-Regular',
     textAlign: 'center',
     lineHeight: 22,
   }

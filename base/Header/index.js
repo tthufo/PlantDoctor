@@ -66,7 +66,6 @@ export default class index extends Component {
           >
             <Text
               style={{
-                // fontFamily: 'SourceHanSansHW-Regular',
                 fontWeight: 'bold',
                 fontSize: 17,
                 color: '#ffffff'
@@ -106,19 +105,20 @@ export default class index extends Component {
               alignItems: 'flex-end'
             }}
           >
-            {Platform.OS == 'android' ? (
+            {/* {Platform.OS == 'android' ? (
               <TouchableOpacity onPress={this.props.onDownloadFile}>
-                {/* <Image
+                <Image
                   style={{ width: 35, height: 35 }}
                   source={require('../../../assets/images/ic_download.png')}
-                /> */}
+                />
               </TouchableOpacity>
             ) : (
-              // <Image
-              //   style={{ width: 35, height: 35 }}
-              //   source={require('../../../assets/images/ic_download.png')}
-              // />
-            )}
+              <Image
+                style={{ width: 35, height: 35 }}
+                source={require('../../../assets/images/ic_download.png')}
+              />
+            )
+            } */}
           </View>
         </Right>
       );
@@ -147,7 +147,7 @@ export default class index extends Component {
             >
               <Image
                 style={{ width: 12, height: 21, marginRight: 5 }}
-                source={require('../../../assets/images/arrow_left_white.png')}
+                source={require('../../assets/images/arrow_left_white.png')}
               />
               <Text
                 style={{

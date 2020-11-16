@@ -1,14 +1,21 @@
 import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from "react-navigation";
-import LoginScreen from '../../src/Login';
-import RegisterScreen from '../../src/Register';
-
+import HomeScreen from '../../src/Hometab/Home';
+import CropScreen from '../../src/Hometab/Crops';
 
 const HomeNavigator = createStackNavigator({
-  Login: { screen: LoginScreen },
-  Register: { screen: RegisterScreen },
+  Home: { screen: HomeScreen },
+  // Crop: { screen: CropScreen },
 }, {
   headerMode: 'none'
 });
 
-export default createAppContainer(HomeNavigator);
+const Root = createStackNavigator({
+  Main: { screen: HomeNavigator },
+  Crop: { screen: CropScreen }
+}, {
+  mode: 'modal', // Remember to set the root navigator to display modally.
+  headerMode: 'none', // This ensures we don't get two top bars.
+})
+
+export default createAppContainer(Root);

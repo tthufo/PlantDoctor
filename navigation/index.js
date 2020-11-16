@@ -13,9 +13,13 @@ const AppNavigator = createStackNavigator({
   Login: { screen: LoginScreen },
   Register: { screen: RegisterScreen },
   Forgot: { screen: ForgotScreen },
-  Tabbar: { screen: TabbarScreen },
+  Tabbar: {
+    screen: TabbarScreen, navigationOptions: {
+      gesturesEnabled: false,
+    }
+  },
 }, {
-  headerMode: 'none'
+  headerMode: 'none',
 });
 
 export default createAppContainer(AppNavigator);

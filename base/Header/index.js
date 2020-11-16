@@ -20,38 +20,39 @@ const os = Platform.OS;
 
 export default class index extends Component {
   render() {
-    const { title, current, total } = this.props;
+    const { title, current, total, height } = this.props;
     let progress = '';
     if (total != null && current != null) {
       progress = current + '/' + total;
     }
     return (
-      <Header style={{ backgroundColor: '#4B8266' }}>
-        {this.renderLeft()}
-        <Body
-          style={{ flex: 1.5, alignItems: 'center', justifyContent: 'center' }}
-        >
-          <View
-            style={{ flex: 1.5, alignItems: 'center', justifyContent: 'center', paddingLeft: 20, paddingRight: 10 }}
+      height ? <Header style={{ height: height, backgroundColor: '#4B8266', borderBottomColor: '#4B8266' }} /> :
+        <Header style={{ backgroundColor: '#4B8266', borderBottomColor: '#4B8266' }}>
+          {this.renderLeft()}
+          <Body
+            style={{ flex: 1.5, alignItems: 'center', justifyContent: 'center' }}
           >
-            <Text
-              numberOfLines={1}
-              ellipsizeMode={'tail'}
-              style={styles.bodyTitle}
+            <View
+              style={{ flex: 1.5, alignItems: 'center', justifyContent: 'center', paddingLeft: 20, paddingRight: 10 }}
             >
-              {title}
-            </Text>
-            {
-              this.props.childTitle &&
-              <Text style={styles.childTitle} numberOfLines={1} ellipsizeMode={'tail'}>{this.props.childTitle}</Text>
-            }
-            {progress.length > 0 && (
-              <Label style={styles.label_small}>{progress}</Label>
-            )}
-          </View>
-        </Body>
-        {this.renderRight()}
-      </Header>
+              <Text
+                numberOfLines={1}
+                ellipsizeMode={'tail'}
+                style={styles.bodyTitle}
+              >
+                {title}
+              </Text>
+              {
+                this.props.childTitle &&
+                <Text style={styles.childTitle} numberOfLines={1} ellipsizeMode={'tail'}>{this.props.childTitle}</Text>
+              }
+              {progress.length > 0 && (
+                <Label style={styles.label_small}>{progress}</Label>
+              )}
+            </View>
+          </Body>
+          {this.renderRight()}
+        </Header>
     );
   }
 
@@ -146,7 +147,7 @@ export default class index extends Component {
               style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}
             >
               <Image
-                style={{ width: 12, height: 21, marginRight: 5 }}
+                style={{ width: 12, height: 21, marginRight: 5, marginLeft: 10 }}
                 source={require('../../assets/images/arrow_left_white.png')}
               />
               <Text

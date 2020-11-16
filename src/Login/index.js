@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions, Platform, ActivityIndicator, TouchableOpacity, SafeAreaView, Image } from 'react-native';
+import { View, StyleSheet, Platform, ActivityIndicator, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { Container, Content, Button, Text } from 'native-base';
+import GetLocation from 'react-native-get-location'
 import InputStyled from '../elements/Input/styled';
 import validate, { alert_validation, max, required } from '../elements/Input/validators';
 import Toast from 'react-native-simple-toast';
@@ -11,8 +12,6 @@ import axios from 'axios';
 import _ from 'lodash';
 
 const os = Platform.OS;
-
-const { height } = Dimensions.get('window');
 
 const validations = {
   email: {
@@ -56,10 +55,32 @@ export default class login extends Component {
   }
 
   componentDidMount() {
-
-  }
-
-  componentWillUnmount() {
+    const { login_info } = this.state;
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 15000,
+    })
+      .then(location => {
+        console.log(location);
+      })
+      .catch(error => {
+        const { code, message } = error;
+        console.warn(code, message);
+      })
+    STG.getData('credential').then(d => {
+      console.log(d)
+      if (d) {
+        this.setState({
+          login_info: {
+            ...login_info,
+            email: d.phone,
+            password: d.pass,
+          }
+        }, () => {
+          this.didPressSubmit()
+        })
+      }
+    })
   }
 
   networkConnectionChange = (isConnected) => {
@@ -107,7 +128,6 @@ export default class login extends Component {
                     }
                   })
                 }}
-
                 unhidden validation={validations.password} showValidation={show_validation} />
               {
                 !this.state.loading && (
@@ -143,10 +163,6 @@ export default class login extends Component {
 
   forgetPassword() {
     this.props.navigation.navigate("Forgot");
-    STG.getData("user").then(e => {
-      console.log(e);
-    });
-    // this.props.navigation.navigate("Tabbar");
   }
 
   async didLogin() {
@@ -171,6 +187,7 @@ export default class login extends Component {
         Toast.show('Lỗi xảy ra, mời bạn thử lại')
         return;
       }
+      STG.saveData("credential", { phone: email, pass: password });
       STG.saveData("token", r.data).then(done => {
         this.requestUser(r);
       });
@@ -185,6 +202,7 @@ export default class login extends Component {
     try {
       const uInfo = await API.auth.userInfo({});
       STG.saveData('user', uInfo.data);
+      this.props.navigation.navigate("Tabbar");
     } catch (e) {
       console.log(e);
     }

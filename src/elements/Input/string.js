@@ -20,10 +20,10 @@ const string = {
         return `正しいメールアドレスを入力してください。`;
 
       case `Phone`:
-        return `正しい電話番号を入力してください。`;
+        return `Số điện thoại không chính xác`;
 
       case `Password`:
-        return `パスワードを入力してください。`;
+        return `Mật khẩu trống`;
 
       case `equipment_id`:
         return `器具名を入力してください。`
@@ -58,7 +58,7 @@ const string = {
       case `Password`:
         return `英数字を含めた4文字以上16文字以下のパスワードを入力してください。`;
       case `Phone`:
-        return `10-11桁の電話番号をハイフン(-)抜きで入力してください。`;
+        return `Số điện thoại không chính xác`;
       case `Company Name`:
         return `50文字以上の名前を入力してください。`;
       default:
@@ -73,7 +73,7 @@ const string = {
       case `Company Name`:
         return `1文字以上の名前を入力してください。`;
       case `Phone`:
-        return `10-11桁の電話番号をハイフン(-)抜きで入力してください。`;
+        return `Số điện thoại không chính xác`;
 
       case `Password`:
         return `英数字を含めた4文字以上16文字以下のパスワードを入力してください。`;

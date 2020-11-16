@@ -121,17 +121,15 @@ const styles = StyleSheet.create({
     marginRight: 13,
   },
   label: {
-    // fontFamily: "SourceHanSansHW-Regular",
     fontSize: 15,
     fontWeight: "500",
-    color: "#0aa2dd",
+    color: "gray",
     lineHeight: 22
   },
   memo: {
-    // fontFamily: "SourceHanSansHW-Regular",
     fontSize: 15,
     fontWeight: "500",
-    color: "#152850",
+    color: "gray",
     lineHeight: 22
   },
 });

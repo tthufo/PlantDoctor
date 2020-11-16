@@ -1,32 +1,30 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions, Platform, ActivityIndicator, Alert, TouchableOpacity, SafeAreaView } from 'react-native';
-import NetInfo from "@react-native-community/netinfo";
+import { View, StyleSheet, Dimensions, Platform, ActivityIndicator, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { Container, Content, Button, Text } from 'native-base';
-// import user_service from './user_service';
-// import string from './string';
 import InputStyled from '../elements/Input/styled';
-import validate, { alert_validation, min, max, required, email } from '../elements/Input/validators';
-// import { client } from '../../App';
+import validate, { alert_validation, max, required } from '../elements/Input/validators';
+import Toast from 'react-native-simple-toast';
+import STG from "../../service/storage";
+import HOST from '../apis/host';
+import API from '../apis';
+import axios from 'axios';
 import _ from 'lodash';
-// import { showError } from '../utility';
-// import Constants from '../Config/Constant';
 
-import { BackgroundImage, Header } from '../elements';
 const os = Platform.OS;
 
 const { height } = Dimensions.get('window');
+
 const validations = {
   email: {
-    label: 'Email',
+    label: 'Phone',
     validations: [
-      required
+      required,
+      max(10),
     ]
   },
   password: {
     label: 'Password',
     validations: [
-      min(4),
-      max(16),
       required,
     ]
   }
@@ -47,7 +45,6 @@ export default class login extends Component {
       loading: false,
       isConnected: true
     };
-    // this.sendDeviceToken = this.sendDeviceToken.bind(this);
     this.forgetPassword = _.debounce(this.forgetPassword, 500, { leading: true, trailing: false });
     this.didPressRegister = _.debounce(this.didPressRegister, 500, { leading: true, trailing: false });
     this.didPressSubmit = _.debounce(this.didPressSubmit, 500, { leading: true, trailing: false });
@@ -59,14 +56,10 @@ export default class login extends Component {
   }
 
   componentDidMount() {
-    // NetInfo.isConnected.addEventListener('connectionChange', this.networkConnectionChange);
-    // NetInfo.isConnected.fetch().done(
-    //   (isConnected) => this.state.isConnected = isConnected
-    // );
+
   }
 
   componentWillUnmount() {
-    // NetInfo.isConnected.removeEventListener('connectionChange', this.networkConnectionChange);
   }
 
   networkConnectionChange = (isConnected) => {
@@ -78,13 +71,20 @@ export default class login extends Component {
     return (
       <Container>
         <Content>
-          <View style={{ justifyContent: 'space-between', height: height - 64 }}>
+          <View style={{ justifyContent: 'space-between' }}>
+            <View style={{ alignItems: 'center' }}>
+              <Image
+                style={{ width: 120, height: 120, marginTop: 50 }}
+                source={require('../../assets/images/dump.png')}
+              />
+            </View>
+            <Text style={{ marginLeft: 15, marginTop: 15, color: '#4B8266', fontWeight: 'bold', fontSize: 24 }}>Đăng nhập</Text>
             <View>
               <InputStyled
-                testID="TXT_EMAIL" label={'têt'}
+                testID="TXT_EMAIL" label={'Số điện thoại *'}
                 parent={this} group="login_info" linkedkey="email"
                 typeSet
-                validation={validations.email} showValidation={show_validation} keyboardType="email-address"
+                validation={validations.email} showValidation={show_validation} keyboardType="number-pad"
                 value={login_info.email}
                 onChangeText={(text) => {
                   this.setState({
@@ -95,7 +95,7 @@ export default class login extends Component {
                   })
                 }}
               />
-              <InputStyled testID="TXT_PASSWORD" label={'pass'}
+              <InputStyled testID="TXT_PASSWORD" label={'Mật khẩu *'}
                 parent={this} group="login_info" linkedkey="password" secureTextEntry
                 value={login_info.password}
                 typeSet
@@ -111,8 +111,8 @@ export default class login extends Component {
                 unhidden validation={validations.password} showValidation={show_validation} />
               {
                 !this.state.loading && (
-                  <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didPressSubmit()}>
-                    <Text style={styles.regularText}>{'Login'}</Text>
+                  <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didLogin()}>
+                    <Text style={styles.regularText}>{'Đăng nhập'}</Text>
                   </Button>
                 )
               }
@@ -121,14 +121,14 @@ export default class login extends Component {
                   <ActivityIndicator size="large" color="#00A7DC" style={{ marginTop: 15 }} />
                 )
               }
-              <Button testID="forgot_password_button" block transparent primary style={styles.btn_forgot_password} onPress={() => this.forgetPassword()}>
-                <Text style={styles.regularText}>{"Forgot"}</Text>
-              </Button>
 
             </View>
-            <View style={{ width: '100%', alignItems: 'center' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+              <TouchableOpacity testID="register_button" style={styles.btn_register} onPress={() => this.forgetPassword()}>
+                <Text style={{ color: 'black' }}>{'Quên mật khẩu?'}</Text>
+              </TouchableOpacity>
               <TouchableOpacity testID="register_button" style={styles.btn_register} onPress={() => this.didPressRegister()}>
-                <Text style={{ color: 'black' }}>{'resigter'}</Text>
+                <Text style={{ color: '#4B8266' }}>{'Đăng ký'}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -142,100 +142,80 @@ export default class login extends Component {
   }
 
   forgetPassword() {
-    this.props.navigation.navigate("ForgetPasswordStep1");
+    this.props.navigation.navigate("Forgot");
+    STG.getData("user").then(e => {
+      console.log(e);
+    });
+    // this.props.navigation.navigate("Tabbar");
+  }
+
+  async didLogin() {
+    const { login_info: { email, password } } = this.state;
+    this.setState({ loading: true })
+    var bodyFormData = new FormData();
+    bodyFormData.append('username', "84915286679");
+    bodyFormData.append('password', "password1");
+    bodyFormData.append('grant_type', 'password');
+    bodyFormData.append('scopes', 'read');
+    axios({
+      method: 'post',
+      url: HOST.BASE_URL + '/authapp/oauth/token',
+      data: bodyFormData,
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Authorization': 'Basic YWdyaS1lY29zeXN0ZW0tYXBwOjEyMzQ1NmFB',
+      }
+    }).then(r => {
+      this.setState({ loading: false })
+      if (r.status != 200) {
+        Toast.show('Lỗi xảy ra, mời bạn thử lại')
+        return;
+      }
+      STG.saveData("token", r.data).then(done => {
+        this.requestUser(r);
+      });
+    }).catch(e => {
+      this.setState({ loading: false })
+      Toast.show('Lỗi xảy ra, mời bạn thử lại')
+      console.log(e)
+    })
+  }
+
+  async requestUser(r) {
+    try {
+      const uInfo = await API.auth.userInfo({});
+      STG.saveData('user', uInfo.data);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async didPressSubmit() {
-    if (!this.state.isConnected) {
-      Alert.alert('sdfdsfd', 'sfasd');
-      return;
-    }
     const validation_results = validate(this.state.login_info, validations);
     this.setState({ ...this.state, show_validation: true });
     if (validation_results.length > 0) {
       alert_validation(validation_results);
     } else {
-      // try {
-      //   this.setState({ loading: true });
-      //   const response = await fetch(service.url('signin'), {
-      //     method: 'POST',
-      //     headers: {
-      //       'Accept': 'application/json',
-      //       'Content-Type': 'application/json',
-      //     },
-      //     body: JSON.stringify({ ...service.oauth_params, ...this.state.login_info })
-      //   });
-      //   const responseJson = await response.json();
-      //   try {
-      //     await client.resetStore();
-      //   } catch (error) {
-      //     console.log('Error login reset store:', error);
-      //   }
-      //   this.setState({ loading: false });
-      //   if (responseJson.isSuccess || responseJson.accessToken) {
-      //     if (!responseJson.lastAccessedAt) {
-      //       this.setState({ token: responseJson.accessToken });
-      //       user_service.setUser({ ...user_service.getUser(), access_token: responseJson.accessToken });
-      //       await user_service.fetchInfo();
-      //       await user_service.saveInfo();
-      //       this.sendDeviceToken(responseJson.accessToken);
-      //       this.props.navigation.navigate('FirstLogin');
-      //     } else {
-      //       user_service.setUser({ ...user_service.getUser(), access_token: responseJson.accessToken });
-      //       await user_service.fetchInfo();
-      //       await user_service.saveInfo();
-      //       this.sendDeviceToken(responseJson.accessToken);
-      //     }
-      //   }else{
-      //     Alert.alert(string.alert,showError(responseJson));
-      //   }
-      // }
-      // catch (error) {
-      //   console.log(error);
-      //   this.setState({ loading: false });
-      // }
+      this.didLogin();
     }
-
   }
-
-  // sendDeviceToken(token) {
-  //   if (user_service.getUser().device_token) {
-  //     fetch(service.url('me/device-token'), {
-  //       method: 'POST',
-  //       headers: {
-  //         'Accept': 'application/json',
-  //         'Content-Type': 'application/json',
-  //         'Authorization': 'Bearer ' + token
-  //       },
-  //       body: JSON.stringify({ token: user_service.getUser().device_token })
-  //     })
-  //       .then(res => {
-  //         EventRegister.emit(Constants.resubscriptionOneSignal, '')
-  //       });
-  //   }
-  // }
 }
 
 const styles = StyleSheet.create({
   btn_sign_in: {
-    marginTop: 36,
-    marginRight: 67,
-    marginLeft: 67,
-    borderRadius: 30
+    marginTop: 30,
+    marginRight: 30,
+    marginLeft: 30,
+    borderRadius: 8,
+    fontWeight: 'bold',
+    backgroundColor: '#4B8266',
   },
   btn_forgot_password: {
     marginTop: 22,
     height: 44,
   },
   btn_register: {
-    alignItems: 'center',
-    borderRadius: 1,
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 50,
-    width: 231,
-    height: 48,
-    justifyContent: 'center',
+    margin: 10,
   },
   image: {
     marginTop: 26,

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Dimensions, Alert, KeyboardAvoidingView, TouchableOpacity, ScrollView, View, Image } from 'react-native';
-import { Container, Title, Button, Text } from 'native-base';
+import { Container, Button, Text } from 'native-base';
 import Input from '../elements/Input/styled';
 import validate, { alert_validation } from '../elements/Input/validators';
 import validation_string from '../elements/Input/string';
@@ -9,36 +9,14 @@ import _ from 'lodash';
 const { width, height } = Dimensions.get('window');
 
 const validations = {
-  company_name: {
-    label: 'Company Name',
-    required: true,
-  },
-  name: {
-    label: 'Name',
-    min: 2,
-    max: 50,
-    required: true,
-  },
-  email: {
-    label: 'Email',
-    required: true,
-    email: true,
-  },
-  password: {
-    label: "Password",
-    required: true,
-    min: 4,
-    max: 16,
-  },
   phone: {
     label: 'Phone',
-    min: 10,
-    max: 11,
+    max: 10,
     required: true,
   }
 };
 
-export default class register extends Component {
+export default class forgot extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -73,7 +51,7 @@ export default class register extends Component {
     const { show_validation, register_info, check } = this.state;
     return (
       <Container>
-        <Header navigation={navigation} title={'Đăng ký'} />
+        <Header navigation={navigation} title={'Quên mật khẩu'} />
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : null}
           style={{ flex: 1 }}
@@ -87,20 +65,7 @@ export default class register extends Component {
                 source={require('../../assets/images/dump.png')}
               />
             </View>
-            <Text style={{ marginLeft: 15, marginTop: 15, color: '#4B8266', fontWeight: 'bold', fontSize: 24 }}>Đăng ký</Text>
-            <Input
-              testID="company_name_textfield" label={'Tên tài khoản *'} parent={this} group="register_info" linkedkey="company_name" validation={validations.company_name} showValidation={show_validation}
-              value={register_info.company_name}
-              typeSet
-              onChangeText={(text) => {
-                this.setState({
-                  register_info: {
-                    ...register_info,
-                    company_name: text
-                  }
-                })
-              }}
-            />
+            <Text style={{ marginLeft: 15, marginTop: 15, color: '#4B8266', fontWeight: 'bold', fontSize: 24 }}>Quên mật khẩu</Text>
             <Input
               testID="phone_textfield" label={'Số điện thoại *'} keyboardType='numeric' parent={this} group="register_info" linkedkey="phone" validation={validations.phone} showValidation={show_validation}
               value={register_info.phone}
@@ -114,59 +79,9 @@ export default class register extends Component {
                 })
               }}
             />
-            <Input
-              testID="password_textfield" label={'Mật khẩu *'} parent={this} group="register_info" linkedkey="password" secureTextEntry unhidden validation={validations.password} showValidation={show_validation}
-              value={register_info.password}
-              typeSet
-              onChangeText={(text) => {
-                this.setState({
-                  register_info: {
-                    ...register_info,
-                    password: text.length > 0 ? text : false
-                  }
-                })
-              }}
-            />
-            <Input
-              testID="confirm_password_textfield" label={'Nhập lại mật khẩu *'} parent={this} group="register_info" linkedkey="password_confirmation" secureTextEntry unhidden validation={() => this.password_confirmation()} showValidation={show_validation}
-              value={register_info.password_confirmation}
-              typeSet
-              onChangeText={(text) => {
-                this.setState({
-                  register_info: {
-                    ...register_info,
-                    password_confirmation: text.length > 0 ? text : false
-                  }
-                })
-              }}
-            />
-            <TouchableOpacity onPress={() => this.setState({ check: !check })}>
-              <View style={{ flexDirection: 'row', margin: 20, alignItems: 'center' }}>
-                <View>
-                  {!check ?
-                    <Image
-                      style={{ width: 30, height: 30 }}
-                      source={require('../../assets/images/arrow_left_white.png')}
-                    /> :
-                    <Image
-                      style={{ width: 30, height: 30 }}
-                      source={require('../../assets/images/dump.png')}
-                    />}
-                </View>
-                <Text style={{ flex: 1, marginLeft: 15, flexWrap: 'wrap' }}>{'Đồng ý với các điều khoản của Bác sỹ cây trồng'}</Text>
-              </View>
-            </TouchableOpacity>
             <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didPressSubmit()}>
-              <Text style={styles.regularText}>{'Đăng ký'}</Text>
+              <Text style={styles.regularText}>{'Gửi lại mật khẩu qua SMS'}</Text>
             </Button>
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <TouchableOpacity testID="register_button" style={styles.btn_register} onPress={() => this.props.navigation.pop()}>
-                <Text style={{ color: 'black' }}>{'Bạn đã có tài khoản?'}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity testID="register_button" style={styles.btn_register} onPress={() => this.props.navigation.pop()}>
-                <Text style={{ color: '#4B8266' }}>{'Đăng nhập'}</Text>
-              </TouchableOpacity>
-            </View>
           </ScrollView>
         </KeyboardAvoidingView>
       </Container>
@@ -227,6 +142,7 @@ export default class register extends Component {
 
 const styles = StyleSheet.create({
   btn_sign_in: {
+    marginTop: 30,
     marginRight: 30,
     marginLeft: 30,
     borderRadius: 8,

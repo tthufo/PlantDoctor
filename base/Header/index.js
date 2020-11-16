@@ -26,7 +26,7 @@ export default class index extends Component {
       progress = current + '/' + total;
     }
     return (
-      <Header>
+      <Header style={{ backgroundColor: '#4B8266' }}>
         {this.renderLeft()}
         <Body
           style={{ flex: 1.5, alignItems: 'center', justifyContent: 'center' }}
@@ -154,10 +154,9 @@ export default class index extends Component {
                   color: 'white',
                   fontSize: 17,
                   fontWeight: 'bold',
-                  // fontFamily: 'SourceHanSansHW-Regular'
                 }}
               >
-                {string.back}
+                {''}
               </Text>
             </View>
           </TouchableOpacity>

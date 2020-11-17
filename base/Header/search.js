@@ -19,7 +19,7 @@ export default class componentName extends Component {
   }
 
   onPressCalendar() {
-    this.props.navigation.navigate('ProjectCalendar');
+
   }
 
   render() {

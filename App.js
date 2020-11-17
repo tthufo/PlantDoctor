@@ -13,11 +13,9 @@ import {
   View,
   BackHandler,
 } from 'react-native';
-// import { StyleProvider } from 'native-base';
-// import getTheme from './native-base-theme/components';
-// import material from './native-base-theme/variables/platform';
 import NavigationScreen from './navigation';
 import backService from './service/handle_back_service';
+import NavigationService from './service/navigate';
 
 class App extends Component {
 
@@ -54,7 +52,7 @@ class App extends Component {
     return (
 
       // <StyleProvider style={getTheme(material)}>
-      <NavigationScreen />
+      <NavigationScreen ref={ref => NavigationService.setTopLevelNavigator(ref)} />
       // </StyleProvider>
     );
   }

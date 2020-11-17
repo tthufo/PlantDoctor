@@ -13,10 +13,10 @@ import _ from 'lodash';
 
 const os = Platform.OS;
 
-const numColumns = 3;
+const numColumns = 2;
 const size = (Dimensions.get('window').width / numColumns) - 10;
 
-export default class crop extends Component {
+export default class tricky extends Component {
 
   constructor(props) {
     super(props);
@@ -30,15 +30,24 @@ export default class crop extends Component {
       token: null,
       loading: false,
       isConnected: true,
-      crops: [],
+      crops: [
+        { name: 'Chọn cây giống', index: 0, image: require('../../../assets/images/sprout.png') },
+        { name: 'Thổ nhưỡng', index: 1, image: require('../../../assets/images/italy.png') },
+        { name: 'Gieo trồng', index: 2, image: require('../../../assets/images/page.png') },
+        { name: 'Thời tiết', index: 3, image: require('../../../assets/images/weather_tips.png') },
+        { name: 'Phân bón', index: 4, image: require('../../../assets/images/fertilizer.png') },
+        { name: 'Tưới tiêu', index: 5, image: require('../../../assets/images/water.png') },
+        { name: 'Dịch bệnh', index: 6, image: require('../../../assets/images/bug.png') },
+        { name: 'Thu hoạch', index: 7, image: require('../../../assets/images/solid.png') },
+      ],
     };
     this.didPressSubmit = _.debounce(this.didPressSubmit, 500, { leading: true, trailing: false });
   }
 
   componentDidMount() {
-    STG.getData('user').then(u => {
-      this.getCrops(u.subscribe);
-    })
+    // STG.getData('user').then(u => {
+    //   this.getCrops(u.subscribe);
+    // })
   }
 
   async getCrops(subscriber) {
@@ -93,45 +102,27 @@ export default class crop extends Component {
     return (
       <Container style={{ backgroundColor: 'white' }}>
         <Header navigation={navigation} title={'Hãy lựa chọn'} />
-        <View style={{ flexDirection: 'column', flex: 1 }}>
-          <View style={{ flex: 1, alignItems: 'center', padding: 5 }}>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#4B8266' }}>Cây trồng</Text>
-            <Text style={{ fontSize: 14 }}>{`Chọn tối đa 8 loại cây trồng (${this.limit().length}/8)`}</Text>
-          </View>
-
-          <View style={{ flex: 8, alignItems: 'center', padding: 0 }}>
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              showsVerticalScrollIndicator={false}
-              data={crops}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity onPress={() => this.handleChange(index)}>
-                  <View
-                    style={styles.itemContainer}>
-                    <Image
-                      style={styles.item}
-                      source={{ uri: item.image }}
-                    />
-                    <Text style={{ alignSelf: 'center', marginBottom: 10 }}>{item.cropsName}</Text>
-                    {item.check &&
-                      <View style={{ position: 'absolute', top: 3, left: 5, right: 5, bottom: 5, borderRadius: 12, borderWidth: 1, borderColor: 'black' }} />}
-                    {item.check && <Image
-                      style={{ width: 30, height: 30, position: 'absolute', right: 10, top: 10 }}
-                      source={require('../../../assets/images/select_crops.png')}
-                    />}
-                  </View>
-                </TouchableOpacity>
-              )}
-              numColumns={numColumns}
-              keyExtractor={(item, index) => index}
-            />
-          </View>
-
-          <View style={{ flex: 1, padding: 15 }}>
-            <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didPressSubmit()}>
-              <Text style={styles.regularText}>{'Lưu'}</Text>
-            </Button>
-          </View>
+        <View style={{ flex: 1, alignItems: 'center', marginTop: 20 }}>
+          <FlatList
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+            data={crops}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => console.log('dfsf')}>
+                <View
+                  style={styles.itemContainer}>
+                  <View style={{ position: 'absolute', top: 3, left: 5, right: 5, bottom: 5, borderRadius: 12, backgroundColor: '#4B8266' }} />
+                  <Image
+                    style={styles.item}
+                    source={item.image}
+                  />
+                  <Text style={{ fontWeight: 'bold', alignSelf: 'center', marginBottom: 10, color: 'white' }}>{item.name}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+            numColumns={numColumns}
+            keyExtractor={(item, index) => index}
+          />
         </View>
       </Container>
     );
@@ -139,8 +130,7 @@ export default class crop extends Component {
 
   async didPressSubmit() {
     const { crops } = this.state;
-    const { navigation: { state: { params: { reload } } }, navigation } = this.props;
-    const { } = this.props;
+    const { navigation } = this.props;
     if (this.limit().length == 0) {
       Toast.show('Hãy chọn ít nhất 1 loại cây')
     } else {
@@ -156,9 +146,6 @@ export default class crop extends Component {
           return
         }
         navigation.pop();
-        if (reload) {
-          reload();
-        }
       } catch (e) {
         console.log(e)
       }
@@ -177,11 +164,13 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     width: size,
-    height: size + 10,
+    height: size * 0.5,
   },
   item: {
-    flex: 1,
-    margin: 3,
+    alignSelf: 'center',
+    margin: 10,
+    width: 75,
+    height: 50,
   },
   image: {
     marginTop: 26,

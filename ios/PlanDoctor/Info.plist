@@ -70,14 +70,14 @@
 		<string>Zocial.ttf</string>
 	</array>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Hệ thống giám sát thiên tai cần truy cập vị trí của bạn cho việc định vị vùng thời tiết nhanh chóng nhất</string>
+	<string>Bác sỹ cây trồng cần truy cập vị trí của bạn cho việc định vị vùng thời tiết nhanh chóng nhất</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Hệ thống giám sát thiên tai cần truy cập vị trí của bạn cho việc định vị vùng thời tiết nhanh chóng nhất</string>
+	<string>Bác sỹ cây trồng cần truy cập vị trí của bạn cho việc định vị vùng thời tiết nhanh chóng nhất</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Hệ thống giám sát thiên tai cần truy cập vị trí của bạn cho việc định vị vùng thời tiết nhanh chóng nhất</string>
+	<string>Bác sỹ cây trồng cần truy cập vị trí của bạn cho việc định vị vùng thời tiết nhanh chóng nhất</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Hệ thống giám sát thiên tai cần sử dụng Micro của bạn cho việc thu âm.</string>
+	<string>Bác sỹ cây trồng cần sử dụng Micro của bạn cho việc thu âm.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Hệ thống giám sát thiên tai cần truy cập Bộ sưu tập ảnh của bạn cho việc cập nhật thông tin người dùng.</string>
+	<string>Bác sỹ cây trồng cần truy cập Bộ sưu tập ảnh của bạn cho việc cập nhật thông tin người dùng.</string>
 </dict>
 </plist>

@@ -9,6 +9,7 @@ import STG from "../../service/storage";
 import HOST from '../apis/host';
 import API from '../apis';
 import axios from 'axios';
+import NavigationService from '../../service/navigate';
 import _ from 'lodash';
 
 const os = Platform.OS;
@@ -96,7 +97,7 @@ export default class login extends Component {
             <View style={{ alignItems: 'center' }}>
               <Image
                 style={{ width: 120, height: 120, marginTop: 50 }}
-                source={require('../../assets/images/dump.png')}
+                source={require('../../assets/images/logo.png')}
               />
             </View>
             <Text style={{ marginLeft: 15, marginTop: 15, color: '#4B8266', fontWeight: 'bold', fontSize: 24 }}>Đăng nhập</Text>
@@ -158,11 +159,11 @@ export default class login extends Component {
   }
 
   didPressRegister() {
-    this.props.navigation.navigate("Register");
+    NavigationService.navigate('Register', {});
   }
 
   forgetPassword() {
-    this.props.navigation.navigate("Forgot");
+    NavigationService.navigate('Forgot', {});
   }
 
   async didLogin() {
@@ -202,7 +203,7 @@ export default class login extends Component {
     try {
       const uInfo = await API.auth.userInfo({});
       STG.saveData('user', uInfo.data);
-      this.props.navigation.navigate("Tabbar");
+      NavigationService.navigate('Tabbar', {});
     } catch (e) {
       console.log(e);
     }

@@ -62,7 +62,7 @@ export default class forgot extends Component {
             <View style={{ alignItems: 'center' }}>
               <Image
                 style={{ width: 120, height: 120, marginTop: 50 }}
-                source={require('../../assets/images/dump.png')}
+                source={require('../../assets/images/logo.png')}
               />
             </View>
             <Text style={{ marginLeft: 15, marginTop: 15, color: '#4B8266', fontWeight: 'bold', fontSize: 24 }}>Quên mật khẩu</Text>
@@ -113,25 +113,7 @@ export default class forgot extends Component {
     if (validation_results.length > 0) {
       alert_validation(validation_results);
     } else {
-      // try {
-      //   const response = await fetch(service.url('signup'), {
-      //     method: 'POST',
-      //     headers: {
-      //       'Accept': 'application/json',
-      //       'Content-Type': 'application/json',
-      //     },
-      //     body: JSON.stringify({ ...service.oauth_params, ...this.state.register_info, phone_number: this.state.register_info.phone })
-      //   });
-      //   const responseJson = await response.json();
-      //   if (responseJson.isSuccess === true) {
-      //     this.props.navigation.navigate("RegisterStep2", { email: this.state.register_info.email });
-      //   } else {
-      //     Alert.alert('aler', showError(responseJson));
-      //   }
-      // }
-      // catch (error) {
-      //   console.log(error);
-      // }
+
     }
   }
 

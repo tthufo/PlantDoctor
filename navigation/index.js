@@ -8,6 +8,10 @@ import ForgotScreen from '../src/Forgot';
 
 import TabbarScreen from '../src/Tabbar';
 
+import TrickyScreen from '../src/Hometab/Tricky';
+import CropScreen from '../src/Hometab/Crops';
+import WeatherScreen from '../src/Hometab/Weather';
+
 const AppNavigator = createStackNavigator({
   Root: { screen: RootScreen },
   Login: { screen: LoginScreen },
@@ -18,6 +22,9 @@ const AppNavigator = createStackNavigator({
       gesturesEnabled: false,
     }
   },
+  Tricky: { screen: TrickyScreen },
+  Crop: { screen: CropScreen },
+  Weather: { screen: WeatherScreen },
 }, {
   headerMode: 'none',
 });

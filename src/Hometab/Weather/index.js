@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, Platform, TouchableOpacity, Image, FlatList, Dimensions,
+  View, StyleSheet, Platform, TouchableOpacity, Image, FlatList, Dimensions, RefreshControl,
 } from 'react-native';
-import { Container, Button, Text } from 'native-base';
+import { Container, Text } from 'native-base';
 import Toast from 'react-native-simple-toast';
 import STG from '../../../service/storage';
 import API from '../../apis';
-import HOST from '../../apis/host';
-import axios from 'axios';
 import { Header } from '../../elements';
 import _ from 'lodash';
 
@@ -16,65 +14,82 @@ const os = Platform.OS;
 const numColumns = 3;
 const size = (Dimensions.get('window').width / numColumns) - 10;
 
+const ROW = ({ title, value }) => {
+  return (
+    <View style={{ flexDirection: 'row' }}>
+      <Text style={{ fontSize: 15, alignSelf: 'center', marginTop: 5 }}>{title}: </Text>
+      <Text style={{ fontSize: 15, fontWeight: 'bold', alignSelf: 'center', marginTop: 5 }}>{value}</Text>
+    </View>
+  );
+};
+
+const UNIT = [
+  { title: 'Nhiệt độ cảm nhận', unit: '°C' },
+  { title: 'Khả năng mưa', unit: '%' },
+  { title: 'Chỉ số UV', unit: '' },
+  { title: 'Chất lượng không khí', unit: '' },
+  { title: 'Gió', unit: 'Km' },
+  { title: 'Độ ẩm', unit: '%' },
+]
+
 export default class crop extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      login_info: {
-        email: false,
-        password: false
-      },
-      show_validation: false,
-      modalVisible: false,
-      token: null,
-      loading: false,
-      isConnected: true,
+      isRefreshing: false,
       crops: [],
+      offset: 0,
     };
     this.didPressSubmit = _.debounce(this.didPressSubmit, 500, { leading: true, trailing: false });
+    this.onRefresh = _.debounce(this.onRefresh, 500, { leading: true, trailing: false });
+    this.onLoadMore = _.debounce(this.onLoadMore, 500, { leading: true, trailing: false });
   }
 
   componentDidMount() {
-    STG.getData('user').then(u => {
-      this.getCrops(u.subscribe);
-    })
+    this.searchCrops();
   }
 
-  async getCrops(subscriber) {
-    var bodyFormData = new FormData();
-    const userInfo = await STG.getData('token')
-    bodyFormData.append('subscriber', subscriber);
-    axios({
-      method: 'post',
-      url: HOST.BASE_URL + '/appcontent/cropsUser/list-crops-user',
-      data: bodyFormData,
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'Authorization': 'bearer' + userInfo.access_token,
-      }
-    }).then(r => {
-      if (r.status != 200) {
-        Toast.show('Lỗi xảy ra, mời bạn thử lại')
-        return;
-      }
-      const resign = r.data.data.map(e => {
-        e.check = e.cropsUserId == null ? false : true;
-        return e;
-      });
-      this.setState({
-        crops: resign,
+  async searchCrops() {
+    const { offset } = this.state;
+    try {
+      const crops = await API.home.searchCrop({
+        categoryId: 5,
+        cropsId: 6,
+        cropsPostId: null,
+        limit: 12,
+        offset,
       })
-    }).catch(e => {
-      Toast.show('Lỗi xảy ra, mời bạn thử lại')
+      this.setState({ isRefreshing: false });
+      console.log('==>', crops)
+      if (crops.data.statusCode != 200) {
+        Toast.show('Lỗi xảy ra, mời bạn thử lại')
+        return
+      }
+    } catch (e) {
       console.log(e)
-    })
+      this.setState({ isRefreshing: false });
+    }
   }
+
+  onRefresh() {
+    console.log('sfsdfdssfsdf')
+    this.setState({ isRefreshing: true, offset: 0 }, () => {
+      this.searchCrops()
+    });
+  }
+
+  onLoadMore() {
+    this.searchCrops();
+    // if (!this.state.loading) {
+    //   this.page = this.page + 1; 
+    //   this.fetchUser(this.page); 
+    // }
+  };
 
   handleChange = (index) => {
     var newData = [...this.state.crops];
     if (this.limit().length >= 8 && newData[index].check == false) {
-      Toast.show('Bạn chỉ được chọn tối đa 8 loại cây trồng')
       return;
     }
     newData[index].check = !newData[index].check;
@@ -89,23 +104,50 @@ export default class crop extends Component {
 
   render() {
     const { navigation } = this.props;
-    const { crops } = this.state;
+    const { crops, isRefreshing } = this.state;
     return (
       <Container style={{ backgroundColor: 'white' }}>
-        <Header navigation={navigation} title={'Hãy lựa chọn'} />
+        <Header navigation={navigation} title={'Thời tiết'} />
         <View style={{ flexDirection: 'column', flex: 1 }}>
-          <View style={{ flex: 1, alignItems: 'center', padding: 5 }}>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#4B8266' }}>Cây trồng</Text>
-            <Text style={{ fontSize: 14 }}>{`Chọn tối đa 8 loại cây trồng (${this.limit().length}/8)`}</Text>
+          <View style={{ flexDirection: 'row', padding: 5 }}>
+
+
+            <View style={{ flex: 1, padding: 5 }}>
+              <View style={{ flexDirection: 'row' }}>
+                <Image
+                  style={{ width: 30, height: 30 }}
+                  source={require('../../../assets/images/location.png')}
+                />
+                <Text style={{ alignSelf: 'center', color: '#4B8266' }}>{'Thanh xuân, Hà nôi'}</Text>
+              </View>
+              <Image
+                style={{ width: 60, height: 60, marginTop: 5, marginBottom: 5 }}
+                source={require('../../../assets/images/dump.png')}
+              />
+              <Text style={{ alignSelf: 'center', color: '#4B8266', fontWeight: 'bold', flexWrap: 'wrap' }}>{'Mưa phùn và sương mù'}</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <Text style={{ fontSize: 45, color: '#4B8266' }}>{'22°'}</Text>
+                <Text style={{ fontSize: 11, color: '#4B8266', alignSelf: 'flex-end', marginBottom: 10 }}>{'19° | 22°'}</Text>
+              </View>
+            </View>
+
+            <View style={{ flex: 1, padding: 5 }}>
+              {UNIT.map(e => {
+                return (
+                  <ROW title={e.title} value={e.unit} />
+                )
+              })}
+            </View>
+
           </View>
 
-          <View style={{ flex: 8, alignItems: 'center', padding: 0 }}>
+          <View style={{ flexGrow: 1, alignItems: 'center', padding: 0 }}>
             <FlatList
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
               data={crops}
               renderItem={({ item, index }) => (
-                <TouchableOpacity onPress={() => this.handleChange(index)}>
+                <TouchableOpacity onPress={() => console.log('sfsfd')}>
                   <View
                     style={styles.itemContainer}>
                     <Image
@@ -124,14 +166,19 @@ export default class crop extends Component {
               )}
               numColumns={numColumns}
               keyExtractor={(item, index) => index}
+              refreshControl={
+                <RefreshControl
+                  style={{ color: 'red' }}
+                  refreshing={isRefreshing}
+                  onRefresh={this.onRefresh}
+                />
+              }
+              onEndReachedThreshold={0.4}
+              onEndReached={this.handleLoadMore}
             />
           </View>
 
-          <View style={{ flex: 1, padding: 15 }}>
-            <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didPressSubmit()}>
-              <Text style={styles.regularText}>{'Lưu'}</Text>
-            </Button>
-          </View>
+
         </View>
       </Container>
     );
@@ -139,8 +186,7 @@ export default class crop extends Component {
 
   async didPressSubmit() {
     const { crops } = this.state;
-    const { navigation: { state: { params: { reload } } }, navigation } = this.props;
-    const { } = this.props;
+    const { navigation } = this.props;
     if (this.limit().length == 0) {
       Toast.show('Hãy chọn ít nhất 1 loại cây')
     } else {
@@ -156,9 +202,6 @@ export default class crop extends Component {
           return
         }
         navigation.pop();
-        if (reload) {
-          reload();
-        }
       } catch (e) {
         console.log(e)
       }

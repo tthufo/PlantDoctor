@@ -124,8 +124,8 @@ export default class forgot extends Component {
 
 const styles = StyleSheet.create({
   btn_sign_in: {
-    marginTop: 30,
-    marginRight: 30,
+    marginTop: 50,
+    marginRight: 50,
     marginLeft: 30,
     borderRadius: 8,
     fontWeight: 'bold',

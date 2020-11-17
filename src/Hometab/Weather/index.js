@@ -17,8 +17,8 @@ const size = (Dimensions.get('window').width / numColumns) - 10;
 const ROW = ({ title, value }) => {
   return (
     <View style={{ flexDirection: 'row' }}>
-      <Text style={{ fontSize: 15, alignSelf: 'center', marginTop: 5 }}>{title}: </Text>
-      <Text style={{ fontSize: 15, fontWeight: 'bold', alignSelf: 'center', marginTop: 5 }}>{value}</Text>
+      <Text style={{ fontSize: 15, alignSelf: 'center', marginTop: 5, flexWrap: 'wrap' }}>{title}: </Text>
+      <Text style={{ fontSize: 15, fontWeight: 'bold', alignSelf: 'center', marginTop: 5, flexWrap: 'wrap' }}>{value}</Text>
     </View>
   );
 };
@@ -32,7 +32,7 @@ const UNIT = [
   { title: 'Độ ẩm', unit: '%' },
 ]
 
-export default class crop extends Component {
+export default class weather extends Component {
 
   constructor(props) {
     super(props);
@@ -73,7 +73,6 @@ export default class crop extends Component {
   }
 
   onRefresh() {
-    console.log('sfsdfdssfsdf')
     this.setState({ isRefreshing: true, offset: 0 }, () => {
       this.searchCrops()
     });
@@ -85,21 +84,6 @@ export default class crop extends Component {
     //   this.page = this.page + 1; 
     //   this.fetchUser(this.page); 
     // }
-  };
-
-  handleChange = (index) => {
-    var newData = [...this.state.crops];
-    if (this.limit().length >= 8 && newData[index].check == false) {
-      return;
-    }
-    newData[index].check = !newData[index].check;
-    this.setState({ crops: newData });
-  };
-
-  limit() {
-    const { crops } = this.state;
-    const limit = crops.filter(e => e.check == true)
-    return limit
   }
 
   render() {
@@ -110,7 +94,6 @@ export default class crop extends Component {
         <Header navigation={navigation} title={'Thời tiết'} />
         <View style={{ flexDirection: 'column', flex: 1 }}>
           <View style={{ flexDirection: 'row', padding: 5 }}>
-
 
             <View style={{ flex: 1, padding: 5 }}>
               <View style={{ flexDirection: 'row' }}>

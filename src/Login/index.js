@@ -223,8 +223,8 @@ export default class login extends Component {
 const styles = StyleSheet.create({
   btn_sign_in: {
     marginTop: 30,
-    marginRight: 30,
-    marginLeft: 30,
+    marginRight: 50,
+    marginLeft: 50,
     borderRadius: 8,
     fontWeight: 'bold',
     backgroundColor: '#4B8266',

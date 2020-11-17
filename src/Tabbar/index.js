@@ -15,20 +15,19 @@ function MyTabs() {
           options={{
             tabBarIcon: ({ focused }) => (
               <Image
-                style={{ width: 35, height: 35, marginTop: 30 }}
+                style={{ width: 25, height: 25, marginTop: 10 }}
                 source={!focused ? require('../../assets/images/ic_tab_home_active.png') : require('../../assets/images/ic_tab_home.png')
                 } />
             ),
             tabBarLabel: ''
           }}
           name="Home"
-          // component={(props) => <Homer {...props} />} />
           component={Homer} />
         <Tab.Screen
           options={{
             tabBarIcon: ({ focused }) => (
               <Image
-                style={{ width: 35, height: 35, marginTop: 30 }}
+                style={{ width: 25, height: 25, marginTop: 10 }}
                 source={!focused ? require('../../assets/images/ic_tab_social_active.png') : require('../../assets/images/ic_tab_social.png')
                 } />
             ),
@@ -40,7 +39,7 @@ function MyTabs() {
           options={{
             tabBarIcon: ({ focused }) => (
               <Image
-                style={{ width: 35, height: 35, marginTop: 30 }}
+                style={{ width: 25, height: 25, marginTop: 10 }}
                 source={!focused ? require('../../assets/images/ic_tab_account_active.png') : require('../../assets/images/ic_tab_account.png')
                 } />
             ),

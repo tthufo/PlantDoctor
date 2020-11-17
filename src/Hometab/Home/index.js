@@ -16,10 +16,10 @@ const CON = ({ image, title, value }) => {
   return (
     <View style={{ alignItems: 'center', margin: 10 }}>
       <Image
-        style={{ width: 55, height: 55, margin: 10 }}
+        style={{ width: 45, height: 45, margin: 10 }}
         source={image}
       />
-      <Text style={{ fontSize: 50, color: 'white' }}>{value}</Text>
+      <Text style={{ fontSize: 35, color: 'white' }}>{value}</Text>
       <Text style={{ fontSize: 16, color: 'white', textAlign: 'center' }}>{title}</Text>
     </View>
   );
@@ -30,7 +30,7 @@ const BUT = ({ image, title, onPress }) => {
     <TouchableOpacity style={{ flex: 1, }} onPress={onPress}>
       <View style={{ flex: 1, backgroundColor: '#4B8266', flexDirection: 'row', alignItems: 'center', margin: 10, padding: 10, borderRadius: 8 }}>
         <Image
-          style={{ width: 60, height: 60 }}
+          style={{ width: 50, height: 50 }}
           source={image}
         />
         <Text style={{ marginLeft: 8, flex: 1, fontSize: 16, color: 'white', flexWrap: 'wrap' }}>{title}</Text>
@@ -38,6 +38,8 @@ const BUT = ({ image, title, onPress }) => {
     </TouchableOpacity>
   );
 };
+
+const COLOR = ["#DFEEB6", "#E9DEB3", "#F1D4B7", "#DCE5CB", "#DFEEB6", "#E9DEB3", "#F1D4B7", "#DCE5CB"]
 
 export default class home extends Component {
 
@@ -54,6 +56,7 @@ export default class home extends Component {
       loading: false,
       isConnected: true,
       crops: [],
+      selectedCrop: 0,
     };
     this.didPressSubmit = _.debounce(this.didPressSubmit, 500, { leading: true, trailing: false });
   }
@@ -105,8 +108,8 @@ export default class home extends Component {
         Toast.show('Lỗi xảy ra, mời bạn thử lại')
         return;
       }
-      const resign = r.data.data.map(e => {
-        e.check = e.cropsUserId == null ? false : true;
+      const resign = r.data.data.map((e, index) => {
+        e.check = index == 0 ? true : false;
         return e;
       });
       this.setState({
@@ -118,24 +121,35 @@ export default class home extends Component {
     })
   }
 
+  handleChange = (index) => {
+    var newData = [...this.state.crops];
+    newData.map(e => {
+      e.check = false
+    })
+    newData[index].check = true;
+    this.setState({ crops: newData, selectedCrop: index });
+  };
+
   reload() {
     STG.getData('user').then(u => {
-      this.getCrops(u.subscribe);
+      this.setState({ selectedCrop: 0 }, () => {
+        this.getCrops(u.subscribe);
+      })
     })
   }
 
   render() {
-    const { crops } = this.state;
+    const { crops, selectedCrop } = this.state;
     return (
       <Container style={{ backgroundColor: 'white' }}>
         <Header height={20} />
         <Content>
           <View style={{ backgroundColor: '#4B8266', flex: 1, alignItems: 'center', padding: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
             <View style={{ height: 40, width: 40 }} />
-            <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'white' }}>Hà nôi việt nam</Text>
+            <Text style={{ fontSize: 22, fontWeight: 'bold', color: 'white' }}>Hà nôi việt nam</Text>
             <TouchableOpacity onPress={() => console.log()}>
               <Image
-                style={{ width: 40, height: 40 }}
+                style={{ width: 30, height: 30 }}
                 source={require('../../../assets/images/ic_dot_menu.png')}
               />
             </TouchableOpacity>
@@ -143,40 +157,52 @@ export default class home extends Component {
           <View style={{ backgroundColor: '#4B8266', flex: 1, padding: 10, flexDirection: 'row', justifyContent: 'center' }}>
             <TouchableOpacity onPress={() => console.log()}>
               <Image
-                style={{ width: 80, height: 80 }}
+                style={{ width: 70, height: 70 }}
                 source={require('../../../assets/images/dump.png')}
               />
             </TouchableOpacity>
-            <Text style={{ fontSize: 70, color: 'white' }}>22</Text>
-            <Text style={{ fontSize: 40, color: 'white' }}>°C</Text>
+            <Text style={{ fontSize: 60, color: 'white' }}>22</Text>
+            <Text style={{ fontSize: 30, color: 'white' }}>°C</Text>
           </View>
           <View style={{ backgroundColor: '#4B8266', flex: 1, padding: 10, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 20, color: 'white' }}>Nhiệt độ cảm nhận 21°C</Text>
-            <Text style={{ fontSize: 20, color: 'white' }}>Có mây và sương mù</Text>
+            <Text style={{ fontSize: 17, color: 'white' }}>Nhiệt độ cảm nhận 21°C</Text>
+            <Text style={{ fontSize: 17, color: 'white' }}>Có mây và sương mù</Text>
           </View>
           <View style={{ backgroundColor: '#4B8266', marginTop: 0, alignContent: 'flex-start', flexDirection: 'row', justifyContent: 'center' }}>
             <CON image={require('../../../assets/images/iqa.png')} title={`Chất lượng\nkhông khí`} value='00' />
             <CON image={require('../../../assets/images/uv.png')} title="Chỉ số UV" value='00' />
             <CON image={require('../../../assets/images/rain_home.png')} title="Khả năng mưa" value='00' />
           </View>
-          <View style={{ padding: 10, flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#4B8266' }}>
+          <View style={{ paddingRight: 10, paddingLeft: 10, flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#4B8266' }}>
             <TouchableOpacity onPress={() => console.log()}>
               <Image
-                style={{ width: 35, height: 35 }}
+                style={{ width: 25, height: 25 }}
                 source={require('../../../assets/images/arrow_left_white.png')}
               />
             </TouchableOpacity>
             <ScrollView
-              style={{ margin: 10 }}
+              style={{ margin: 0 }}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
-              pagingEnabled={true}>
-              {crops.map(item => {
+            >
+              {crops.map((item, index) => {
                 return (
-                  <Image
-                    style={{ width: 70, height: 70, borderRadius: 35, marginRight: 10, marginLeft: 10 }}
-                    source={{ uri: item.image }}
-                  />
+                  <View>
+                    {item.check &&
+                      <Image
+                        tintColor={COLOR[selectedCrop]}
+                        style={{ tintColor: COLOR[selectedCrop], position: 'absolute', top: 0, left: 0, marginRight: 0, marginLeft: 0 }}
+                        source={require('../../../assets/images/bg_selected_scrops_1.png')}
+                      />}
+                    <View style={{ flex: 1, padding: 4 }}>
+                      <TouchableOpacity onPress={() => this.handleChange(index)}>
+                        <Image
+                          style={{ width: 50, height: 50, borderRadius: 30, marginRight: 15, marginLeft: 17 }}
+                          source={{ uri: item.image }}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 )
               })}
             </ScrollView>
@@ -184,18 +210,20 @@ export default class home extends Component {
               NavigationService.navigate('Crop', { reload: () => this.reload() });
             }}>
               <Image
-                style={{ width: 45, height: 45 }}
+                style={{ width: 35, height: 35 }}
                 source={require('../../../assets/images/edit_white.png')}
               />
             </TouchableOpacity>
           </View>
 
-          <View style={{ backgroundColor: 'blue', alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }}>
+          <View style={{ backgroundColor: COLOR[selectedCrop], alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }}>
             <BUT image={require('../../../assets/images/italy.png')} title={`Mẹo canh tác`} onPress={() => {
-              NavigationService.navigate('Tricky', {});
+              const par = crops.filter(e => e.check == true)
+              NavigationService.navigate('Tricky', { para: par[0] });
             }} />
             <BUT image={require('../../../assets/images/weather_tips.png')} title={`Thời tiết và cây trồng`} onPress={() => {
-              NavigationService.navigate('Weather', {});
+              const par = crops.filter(e => e.check == true)
+              NavigationService.navigate('Weather', { para: par[0] });
             }} />
           </View>
 
@@ -222,8 +250,8 @@ export default class home extends Component {
 
 const styles = StyleSheet.create({
   btn_sign_in: {
-    marginTop: 30,
-    width: 250,
+    margin: 30,
+    width: 200,
     alignSelf: 'center',
     borderRadius: 8,
     fontWeight: 'bold',
@@ -254,6 +282,6 @@ const styles = StyleSheet.create({
   regularText: {
     textAlign: 'center',
     lineHeight: 22,
-    fontSize: 24,
+    fontSize: 20,
   }
 });

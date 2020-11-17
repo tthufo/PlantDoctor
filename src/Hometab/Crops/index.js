@@ -168,7 +168,6 @@ export default class crop extends Component {
 
 const styles = StyleSheet.create({
   btn_sign_in: {
-    marginTop: 30,
     width: 90,
     alignSelf: 'flex-end',
     borderRadius: 8,
@@ -201,6 +200,6 @@ const styles = StyleSheet.create({
   regularText: {
     textAlign: 'center',
     lineHeight: 22,
-    fontSize: 24,
+    fontSize: 20,
   }
 });

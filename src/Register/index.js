@@ -143,17 +143,12 @@ export default class register extends Component {
             <TouchableOpacity onPress={() => this.setState({ check: !check })}>
               <View style={{ flexDirection: 'row', margin: 20, alignItems: 'center' }}>
                 <View>
-                  {!check ?
-                    <Image
-                      style={{ width: 30, height: 30 }}
-                      source={require('../../assets/images/arrow_left_white.png')}
-                    /> :
-                    <Image
-                      style={{ width: 30, height: 30 }}
-                      source={require('../../assets/images/logo.png')}
-                    />}
+                  <Image
+                    style={{ width: 20, height: 20 }}
+                    source={!check ? require('../../assets/images/ic_unchecked.png') : require('../../assets/images/ic_checked.png')}
+                  />
                 </View>
-                <Text style={{ flex: 1, marginLeft: 15, flexWrap: 'wrap' }}>{'Đồng ý với các điều khoản của Bác sỹ cây trồng'}</Text>
+                <Text style={{ flex: 1, marginLeft: 15, flexWrap: 'wrap', fontSize: 14 }}>{'Đồng ý với các điều khoản của Bác sỹ cây trồng'}</Text>
               </View>
             </TouchableOpacity>
             <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didPressSubmit()}>
@@ -209,8 +204,8 @@ export default class register extends Component {
 
 const styles = StyleSheet.create({
   btn_sign_in: {
-    marginRight: 30,
-    marginLeft: 30,
+    marginRight: 50,
+    marginLeft: 50,
     borderRadius: 8,
     fontWeight: 'bold',
     backgroundColor: '#4B8266',

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, Dimensions, Image, Text
+  StyleSheet, Dimensions,
 } from 'react-native';
 import {
   WebView,

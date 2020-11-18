@@ -2,8 +2,10 @@ import React from 'react';
 import { Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Hometab from '../Hometab';
+// import Hometab from '../Hometab';
 import Homer from '../Hometab/Home';
+import UserTab from '../Usertab';
+import SocialTab from '../Socialtab';
 
 const Tab = createBottomTabNavigator();
 
@@ -34,7 +36,7 @@ function MyTabs() {
             tabBarLabel: ''
           }}
           name="Social"
-          component={Hometab} />
+          component={SocialTab} />
         <Tab.Screen
           options={{
             tabBarIcon: ({ focused }) => (
@@ -46,7 +48,7 @@ function MyTabs() {
             tabBarLabel: ''
           }}
           name="User"
-          component={Hometab} />
+          component={UserTab} />
       </Tab.Navigator>
     </NavigationContainer>
   );

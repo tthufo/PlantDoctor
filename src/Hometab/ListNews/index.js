@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, Platform, TouchableOpacity, Image, FlatList, Dimensions, RefreshControl,
+  View, StyleSheet, TouchableOpacity, Image, FlatList, Dimensions, RefreshControl,
 } from 'react-native';
 import { Container, Text } from 'native-base';
 import Toast from 'react-native-simple-toast';
@@ -10,10 +10,6 @@ import { Header } from '../../elements';
 import NavigationService from '../../../service/navigate';
 import _ from 'lodash';
 
-const os = Platform.OS;
-
-const numColumns = 2;
-const size = (Dimensions.get('window').width / numColumns) - 10;
 const imageSize = (Dimensions.get('window').width * 9 / 16);
 const widthSize = (Dimensions.get('window').width);
 
@@ -26,6 +22,7 @@ export default class listnews extends Component {
       crops: [],
       offset: 0,
       full: false,
+      isRefreshing: false,
     };
   }
 
@@ -108,6 +105,7 @@ export default class listnews extends Component {
                 />
                 <Text style={{ fontWeight: 'bold', margin: 5, color: '#4B8266', fontSize: 15 }}>{item.titlePost}</Text>
                 <Text style={{ margin: 5, fontSize: 13 }}>{item.summaryPost}</Text>
+                <View style={{ flex: 1, height: 1, backgroundColor: 'gray' }} />
               </View>
             </TouchableOpacity>
           )}
@@ -136,10 +134,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     backgroundColor: '#4B8266',
   },
-  itemContainer: {
-    width: size,
-    height: size * 0.5,
-  },
   item: {
     alignSelf: 'center',
     width: widthSize,
@@ -149,16 +143,6 @@ const styles = StyleSheet.create({
     marginTop: 26,
     height: 40,
     width: 40
-  },
-  innerContainer: {
-    alignItems: 'center',
-    width: 363,
-    height: os === 'ios' ? 200 : 270,
-    borderRadius: 4,
-    backgroundColor: "#ffffff",
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: "#979797"
   },
   regularText: {
     textAlign: 'center',

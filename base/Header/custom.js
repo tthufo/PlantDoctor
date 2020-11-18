@@ -85,7 +85,6 @@ export default class index extends Component {
 
 const styles = StyleSheet.create({
   bodyTitle: {
-    // fontFamily: 'SourceHanSansHW-Regular',
     color: '#ffffff',
     fontSize: 17,
     fontWeight: 'bold',

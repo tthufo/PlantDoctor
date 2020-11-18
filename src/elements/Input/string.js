@@ -7,10 +7,10 @@ const nameParam = {
 
 const string = {
   email: (name) => null,
-  invalidEmail: (name) => '正しいメールアドレスを入力してください。 ',
-  datePlaceHolder: '日を選択してください。',
-  cancelBtn: 'キャンセル',
-  confirmBtn: '確認',
+  invalidEmail: (name) => 'Email không hợp lệ',
+  datePlaceHolder: 'Ngày tháng năm',
+  cancelBtn: 'Bỏ qua',
+  confirmBtn: 'Thông báo',
   bothEmpty: 'メモのタイトル及び内容を入力してください。',
   limitTitle: 'メモのタイトルは20文字以内で入力してください。',
   limitContent: 'メモの内容は255文字以内で入力してください。',
@@ -108,9 +108,9 @@ const string = {
   isPast: (name) => {
     return `校正年月日を正しく入力してください。`;
   },
-  passwordNotMatch: 'パスワードが間違っています。',
+  passwordNotMatch: 'Password không trùng khớp',
   default: (text) => () => text,
-  alert: '注意'
+  alert: 'Thông báo'
 }
 
 export default string;

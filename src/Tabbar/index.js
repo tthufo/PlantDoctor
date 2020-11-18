@@ -2,10 +2,9 @@ import React from 'react';
 import { Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-// import Hometab from '../Hometab';
 import Homer from '../Hometab/Home';
 import UserTab from '../Usertab';
-import SocialTab from '../Socialtab';
+import SocialTab from '../Socialtab/Social';
 
 const Tab = createBottomTabNavigator();
 

@@ -258,16 +258,6 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40
   },
-  innerContainer: {
-    alignItems: 'center',
-    width: 363,
-    height: os === 'ios' ? 200 : 270,
-    borderRadius: 4,
-    backgroundColor: "#ffffff",
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: "#979797"
-  },
   regularText: {
     textAlign: 'center',
     lineHeight: 22,

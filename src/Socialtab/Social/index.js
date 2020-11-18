@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, TouchableOpacity, Image, FlatList, Dimensions, RefreshControl,
+  View, StyleSheet, TouchableOpacity, Image, FlatList, Dimensions, RefreshControl, ScrollView, TextInput,
 } from 'react-native';
 import { Container, Button, Text } from 'native-base';
+import { Searchbar } from 'react-native-paper';
 import Toast from 'react-native-simple-toast';
-import STG from '../../service/storage';
-import API from '../apis';
-import { Header } from '../elements';
+import STG from '../../../service/storage';
+import API from '../../apis';
+import NavigationService from '../../../service/navigate';
 import _ from 'lodash';
 
 const imageSize = (Dimensions.get('window').width * 9 / 16);
 const widthSize = (Dimensions.get('window').width);
 
-export default class user extends Component {
+export default class social extends Component {
 
   constructor(props) {
     super(props);
@@ -25,6 +26,8 @@ export default class user extends Component {
       full: false,
       isRefreshing: false,
       userInfo: {},
+      search: '',
+      condition: { filter: [], status: [] },
     };
   }
 
@@ -51,14 +54,17 @@ export default class user extends Component {
   }
 
   async getQuestion(loadMore) {
-    const { offset } = this.state;
+    const { offset, condition, search } = this.state;
+    const listCropsId = condition.filter.map(e => {
+      return e.cropsId;
+    })
     try {
       const u = await STG.getData('user')
       const question = await API.user.getQuestion({
-        listCropsId: [],
-        listStatus: this.getStatus(),
+        listCropsId,
+        listStatus: condition.status,
         subscriber: u.subscribe,
-        searchContent: "",
+        searchContent: search,
         limit: 12,
         offset,
       })
@@ -104,58 +110,61 @@ export default class user extends Component {
     })
   }
 
+  updateFilter(newCondition) {
+    const { condition } = this.state;
+    console.log(newCondition)
+    const changed = _.isEqual(condition, newCondition)
+    this.setState({ condition: newCondition }, () => {
+      if (!changed) {
+        this.onRefresh();
+      }
+    });
+  }
+
   render() {
-    const { userInfo, question, approve, deny, isRefreshing } = this.state;
+    const { userInfo, question, approve, deny, isRefreshing, search, condition } = this.state;
     return (
       <Container style={{ backgroundColor: 'white' }}>
-        {/* <Header title={'Tài khoản cá nhân'} /> */}
         <View style={{ flexDirection: 'column', flex: 1 }}>
-          <View style={{ margin: 10, padding: 5, }}>
-            {/* <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-              <Image
-                style={{ width: 80, height: 80 }}
-                source={{ uri: userInfo && userInfo.avatar }}
-              />
-              <View style={{ padding: 10, flex: 1 }}>
-                <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#4B8266' }}>{userInfo && userInfo.fullName}</Text>
-                <Text style={{ fontSize: 15, marginBottom: 5, marginTop: 5 }}>{userInfo && userInfo.subscribe}</Text>
-                <Button block primary style={styles.btn_sign_in} onPress={() => console.log('')}>
-                  <Text style={styles.regularText}>{'Chỉnh sửa'}</Text>
-                </Button>
-              </View>
-            </View> */}
-            {/* <View>
-              <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#4B8266', marginBottom: 5, marginTop: 0 }}>{'Câu hỏi của tôi'}</Text>
-              <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity style={{ marginRight: 15 }} onPress={() => {
-                  this.setState({ approve: !this.state.approve }, () => {
-                    this.getQuestion(false)
-                  })
-                }} >
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Image
-                      style={{ width: 35, height: 35 }}
-                      source={!approve ? require('../../assets/images/ic_unchecked_circle.png') : require('../../assets/images/ic_checked_circle.png')}
-                    />
-                    <Text style={{ fontSize: 14 }}>{'Đã duyệt'}</Text>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => {
-                  this.setState({ deny: !this.state.deny }, () => {
-                    this.getQuestion(false)
-                  })
-                }} >
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Image
-                      style={{ width: 35, height: 35 }}
-                      source={!deny ? require('../../assets/images/ic_unchecked_circle.png') : require('../../assets/images/ic_checked_circle.png')}
-                    />
-                    <Text style={{ fontSize: 14 }}>{'Chưa duyệt'}</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            </View> */}
+          <Searchbar
+            style={{ borderRadius: 8, marginTop: 30, marginLeft: 10, marginRight: 10 }}
+            placeholder={'Nhập nội dung tìm kiếm'}
+            onChangeText={(e) => this.setState({ search: e })}
+            value={search}
+            onSubmitEditing={() => {
+              this.onRefresh();
+            }}
+            autoCompleteType={'off'}
+            autoCorrect={false}
+            clearButtonMode={'unless-editing'}
+          />
+
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ fontSize: 15, margin: 10 }}>{'Lọc theo'}</Text>
+            <TouchableOpacity onPress={() => {
+              NavigationService.navigate('Filter', { condition, updateFilter: (condition) => this.updateFilter(condition) });
+            }}>
+              <Text style={{ fontSize: 15, margin: 10, color: '#4B8266' }}>{'Thay đổi'}</Text>
+            </TouchableOpacity>
           </View>
+
+          {condition.filter.length != 0 &&
+            <View>
+              <ScrollView
+                style={{ marginRight: 10, marginLeft: 10, marginBottom: 10 }}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+              >
+                {condition.filter.map((item) => {
+                  return (
+                    <View style={{ padding: 8, marginRight: 10, backgroundColor: '#F1D4B7', borderRadius: 6, justifyContent: 'center', alignItems: 'center' }}>
+                      <Text style={{ fontSize: 16 }}>{item.cropsName}</Text>
+                    </View>
+                  )
+                })}
+              </ScrollView>
+            </View>
+          }
 
           <FlatList
             showsHorizontalScrollIndicator={false}

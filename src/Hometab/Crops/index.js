@@ -73,7 +73,7 @@ export default class crop extends Component {
 
   handleChange = (index) => {
     var newData = [...this.state.crops];
-    if (this.limit().length >= 8 && newData[index].check == false) {
+    if (!this.getParam().filter && this.limit().length >= 8 && newData[index].check == false) {
       Toast.show('Bạn chỉ được chọn tối đa 8 loại cây trồng')
       return;
     }
@@ -94,9 +94,10 @@ export default class crop extends Component {
       <Container style={{ backgroundColor: 'white' }}>
         <Header navigation={navigation} title={'Hãy lựa chọn'} />
         <View style={{ flexDirection: 'column', flex: 1 }}>
-          <View style={{ flex: 1, alignItems: 'center', padding: 5 }}>
+          <View style={{ alignItems: 'center', padding: 5 }}>
             <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#4B8266' }}>Cây trồng</Text>
-            <Text style={{ fontSize: 14 }}>{`Chọn tối đa 8 loại cây trồng (${this.limit().length}/8)`}</Text>
+            {!this.getParam().filter &&
+              <Text style={{ fontSize: 14 }}>{`Chọn tối đa 8 loại cây trồng (${this.limit().length}/8)`}</Text>}
           </View>
 
           <View style={{ flex: 8, alignItems: 'center', padding: 0 }}>
@@ -127,8 +128,17 @@ export default class crop extends Component {
             />
           </View>
 
-          <View style={{ flex: 1, padding: 15 }}>
-            <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didPressSubmit()}>
+          <View style={{ padding: 15 }}>
+            <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => {
+              if (!this.getParam().filter) {
+                this.didPressSubmit()
+              } else {
+                navigation.pop();
+                if (this.getParam().updateFilter) {
+                  this.getParam().updateFilter(crops.filter(e => e.check == true));
+                }
+              }
+            }}>
               <Text style={styles.regularText}>{'Lưu'}</Text>
             </Button>
           </View>
@@ -137,10 +147,14 @@ export default class crop extends Component {
     );
   }
 
+  getParam() {
+    const { navigation: { state: { params } } } = this.props;
+    return params;
+  }
+
   async didPressSubmit() {
     const { crops } = this.state;
     const { navigation: { state: { params: { reload } } }, navigation } = this.props;
-    const { } = this.props;
     if (this.limit().length == 0) {
       Toast.show('Hãy chọn ít nhất 1 loại cây')
     } else {

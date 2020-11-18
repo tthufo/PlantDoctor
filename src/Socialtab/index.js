@@ -110,7 +110,6 @@ export default class user extends Component {
       <Container style={{ backgroundColor: 'white' }}>
         {/* <Header title={'Tài khoản cá nhân'} /> */}
         <View style={{ flexDirection: 'column', flex: 1 }}>
-
           <View style={{ margin: 10, padding: 5, }}>
             {/* <View style={{ alignItems: 'center', flexDirection: 'row' }}>
               <Image

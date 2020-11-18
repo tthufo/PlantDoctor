@@ -58,7 +58,6 @@ export default class home extends Component {
       crops: [],
       selectedCrop: 0,
     };
-    this.didPressSubmit = _.debounce(this.didPressSubmit, 500, { leading: true, trailing: false });
   }
 
   componentDidMount() {
@@ -228,23 +227,13 @@ export default class home extends Component {
           </View>
 
           <View style={{ alignItems: 'center', flex: 1 }}>
-            <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didLogin()}>
+            <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => console.log('')}>
               <Text style={styles.regularText}>{'Đặt câu hỏi'}</Text>
             </Button>
           </View>
         </Content>
       </Container>
     );
-  }
-
-  async didPressSubmit() {
-    const validation_results = validate(this.state.login_info, validations);
-    this.setState({ ...this.state, show_validation: true });
-    if (validation_results.length > 0) {
-      alert_validation(validation_results);
-    } else {
-      this.didLogin();
-    }
   }
 }
 

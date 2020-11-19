@@ -14,6 +14,7 @@ import WeatherScreen from '../src/Hometab/Weather';
 import ListNewsScreen from '../src/Hometab/ListNews';
 import NewsScreen from '../src/Hometab/News';
 import FilterScreen from '../src/Socialtab/Filter';
+import QuestionScreen from '../src/Question';
 
 const AppNavigator = createStackNavigator({
   Root: { screen: RootScreen },
@@ -31,6 +32,7 @@ const AppNavigator = createStackNavigator({
   ListNews: { screen: ListNewsScreen },
   News: { screen: NewsScreen },
   Filter: { screen: FilterScreen },
+  Question: { screen: QuestionScreen },
 }, {
   headerMode: 'none',
 });

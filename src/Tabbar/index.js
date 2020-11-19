@@ -3,7 +3,7 @@ import { Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Homer from '../Hometab/Home';
-import UserTab from '../Usertab';
+import UserTab from '../Usertab/User';
 import SocialTab from '../Socialtab/Social';
 
 const Tab = createBottomTabNavigator();

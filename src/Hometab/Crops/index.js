@@ -59,7 +59,7 @@ export default class crop extends Component {
         return;
       }
       const resign = r.data.data.map(e => {
-        e.check = e.cropsUserId == null ? false : true;
+        e.check = e.cropsUserId == null ? false : (this.getParam().single ? false : true);
         return e;
       });
       this.setState({
@@ -96,7 +96,7 @@ export default class crop extends Component {
         <View style={{ flexDirection: 'column', flex: 1 }}>
           <View style={{ alignItems: 'center', padding: 5 }}>
             <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#4B8266' }}>Cây trồng</Text>
-            {!this.getParam().filter &&
+            {!this.getParam().filter && !this.getParam().single &&
               <Text style={{ fontSize: 14 }}>{`Chọn tối đa 8 loại cây trồng (${this.limit().length}/8)`}</Text>}
           </View>
 
@@ -106,7 +106,16 @@ export default class crop extends Component {
               showsVerticalScrollIndicator={false}
               data={crops}
               renderItem={({ item, index }) => (
-                <TouchableOpacity onPress={() => this.handleChange(index)}>
+                <TouchableOpacity onPress={() => {
+                  if (!this.getParam().single) {
+                    this.handleChange(index)
+                  } else {
+                    if (this.getParam().updateFilter) {
+                      navigation.pop()
+                      this.getParam().updateFilter(item)
+                    }
+                  }
+                }}>
                   <View
                     style={styles.itemContainer}>
                     <Image
@@ -128,7 +137,7 @@ export default class crop extends Component {
             />
           </View>
 
-          <View style={{ padding: 15 }}>
+          {!this.getParam().single && <View style={{ padding: 15 }}>
             <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => {
               if (!this.getParam().filter) {
                 this.didPressSubmit()
@@ -141,7 +150,7 @@ export default class crop extends Component {
             }}>
               <Text style={styles.regularText}>{'Lưu'}</Text>
             </Button>
-          </View>
+          </View>}
         </View>
       </Container>
     );

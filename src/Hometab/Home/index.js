@@ -227,7 +227,9 @@ export default class home extends Component {
           </View>
 
           <View style={{ alignItems: 'center', flex: 1 }}>
-            <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => console.log('')}>
+            <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => {
+              NavigationService.navigate('Question', {});
+            }}>
               <Text style={styles.regularText}>{'Đặt câu hỏi'}</Text>
             </Button>
           </View>

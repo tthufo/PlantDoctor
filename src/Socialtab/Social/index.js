@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, TouchableOpacity, Image, FlatList, Dimensions, RefreshControl, ScrollView, TextInput,
+  View, StyleSheet, TouchableOpacity, Image, FlatList, Dimensions, RefreshControl, ScrollView,
 } from 'react-native';
 import { Container, Button, Text } from 'native-base';
 import { Searchbar } from 'react-native-paper';
@@ -172,7 +172,7 @@ export default class social extends Component {
             data={question}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => {
-                // NavigationService.navigate('News', { para: item });
+                NavigationService.navigate('Answer', { question: item });
               }}>
                 <View
                   style={{ flex: 1 }}>
@@ -222,13 +222,14 @@ export default class social extends Component {
             }
             onEndReachedThreshold={0.4}
             onEndReached={() => this.onLoadMore()}
+          // onScroll={(e) => console.log(e.nativeEvent.contentOffset.y)}
           />
 
-          {/* <View style={{ flex: 1, padding: 15 }}>
-            <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didPressSubmit()}>
-              <Text style={styles.regularText}>{'Lưu'}</Text>
-            </Button>
-          </View> */}
+          <Button testID="BTN_SIGN_IN" block primary style={[styles.btn_sign_in, styles.floating]} onPress={() => {
+            NavigationService.navigate('Question', { updateList: () => this.getQuestion(false) });
+          }}>
+            <Text style={styles.regularText}>{'Đặt câu hỏi'}</Text>
+          </Button>
 
         </View>
       </Container >
@@ -241,9 +242,7 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 8,
     fontWeight: 'bold',
-    backgroundColor: 'white',
-    borderColor: '#4B8266',
-    borderWidth: 1,
+    backgroundColor: '#4B8266',
   },
   item: {
     alignSelf: 'center',
@@ -259,6 +258,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#4B8266',
-  }
+    color: 'white',
+  },
+  floating: {
+    position: 'absolute',
+    width: 120,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    right: 20,
+    bottom: 20,
+  },
 });

@@ -15,6 +15,8 @@ import ListNewsScreen from '../src/Hometab/ListNews';
 import NewsScreen from '../src/Hometab/News';
 import FilterScreen from '../src/Socialtab/Filter';
 import QuestionScreen from '../src/Question';
+import AnswerScreen from '../src/Answer';
+import UpdateScreen from '../src/Usertab/Update';
 
 const AppNavigator = createStackNavigator({
   Root: { screen: RootScreen },
@@ -33,6 +35,8 @@ const AppNavigator = createStackNavigator({
   News: { screen: NewsScreen },
   Filter: { screen: FilterScreen },
   Question: { screen: QuestionScreen },
+  Answer: { screen: AnswerScreen },
+  Update: { screen: UpdateScreen },
 }, {
   headerMode: 'none',
 });

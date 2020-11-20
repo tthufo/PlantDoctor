@@ -182,7 +182,6 @@ export default class register extends Component {
 
   async didPressSubmit() {
     if (!this.state.isConnected) {
-      Alert.alert('nôn', 'noo');
       return;
     }
     this.setState({ ...this.state, show_validation: true });

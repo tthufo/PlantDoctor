@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import {
   View, StyleSheet, TouchableOpacity, Image, FlatList, Dimensions, RefreshControl,
 } from 'react-native';
-import { Container, Button, Text, Right } from 'native-base';
+import { Container, Button, Text } from 'native-base';
 import Toast from 'react-native-simple-toast';
 import STG from '../../../service/storage';
 import API from '../../apis';
 import { Header } from '../../elements';
+import NavigationService from '../../../service/navigate';
 import _ from 'lodash';
 
 const imageSize = (Dimensions.get('window').width * 9 / 16);
@@ -106,7 +107,6 @@ export default class user extends Component {
 
   render() {
     const { userInfo, question, approve, deny, isRefreshing } = this.state;
-    console.log(userInfo)
     return (
       <Container style={{ backgroundColor: 'white' }}>
         <Header title={'Tài khoản cá nhân'} />
@@ -119,9 +119,17 @@ export default class user extends Component {
                 source={{ uri: userInfo && userInfo.avatar }}
               />
               <View style={{ padding: 10, flex: 1 }}>
-                <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#4B8266' }}>{userInfo && userInfo.fullName}</Text>
+                <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#4B8266' }}>{userInfo && userInfo.fullName}</Text>
                 <Text style={{ fontSize: 15, marginBottom: 5, marginTop: 5 }}>{userInfo && userInfo.subscribe}</Text>
-                <Button block primary style={styles.btn_sign_in} onPress={() => console.log('')}>
+                <Button block primary style={styles.btn_sign_in} onPress={() => {
+                  NavigationService.navigate('Update', {
+                    updateList: () => {
+                      STG.getData('user').then(userInfo => {
+                        this.setState({ userInfo })
+                      })
+                    }
+                  });
+                }}>
                   <Text style={styles.regularText}>{'Chỉnh sửa'}</Text>
                 </Button>
               </View>
@@ -217,11 +225,11 @@ export default class user extends Component {
             onEndReached={() => this.onLoadMore()}
           />
 
-          {/* <View style={{ flex: 1, padding: 15 }}>
-            <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didPressSubmit()}>
-              <Text style={styles.regularText}>{'Lưu'}</Text>
-            </Button>
-          </View> */}
+          <Button testID="BTN_SIGN_IN" block primary style={[styles.btn_sign, styles.floating]} onPress={() => {
+            NavigationService.navigate('Question', { updateList: () => this.getQuestion(false) });
+          }}>
+            <Text style={styles.regular}>{'Đặt câu hỏi'}</Text>
+          </Button>
 
         </View>
       </Container >
@@ -238,6 +246,12 @@ const styles = StyleSheet.create({
     borderColor: '#4B8266',
     borderWidth: 1,
   },
+  btn_sign: {
+    height: 32,
+    borderRadius: 8,
+    fontWeight: 'bold',
+    backgroundColor: '#4B8266',
+  },
   item: {
     alignSelf: 'center',
     width: widthSize,
@@ -253,5 +267,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#4B8266',
-  }
+  },
+  regular: {
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  floating: {
+    position: 'absolute',
+    width: 120,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    right: 20,
+    bottom: 20,
+  },
 });

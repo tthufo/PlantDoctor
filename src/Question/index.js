@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Platform, ActivityIndicator, NativeModules, Alert, TouchableOpacity, TextInput, Image, PermissionsAndroid } from 'react-native';
+import {
+  View, StyleSheet, Platform, ActivityIndicator, NativeModules,
+  Alert, TouchableOpacity, TextInput, Image, PermissionsAndroid, ScrollView
+} from 'react-native';
 import { Container, Content, Button, Text } from 'native-base';
-import validate, { alert_validation, max, required } from '../elements/Input/validators';
+import validate, { max, required } from '../elements/Input/validators';
 import { Header } from '../elements';
 import ImagePicker from 'react-native-image-picker';
 import Toast from 'react-native-simple-toast';
@@ -30,12 +33,16 @@ const validations = {
   }
 }
 
+function remove(arrOriginal, elementToRemove) {
+  return arrOriginal.filter(function (el) { return el !== elementToRemove });
+}
+
 const FIELD = ({ obj, onChange, value }) => {
   return (
     <View>
       <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>{obj.title}</Text>
       <TextInput
-        style={{ padding: 10, height: obj.height, borderColor: 'black', borderWidth: 1, borderRadius: 8 }}
+        style={{ textAlignVertical: 'top', padding: 10, height: obj.height, borderColor: 'black', borderWidth: 1, borderRadius: 8 }}
         multiline
         autoCompleteType={'off'}
         autoCorrect={false}
@@ -56,14 +63,17 @@ export default class question extends Component {
       answer: '',
       loading: false,
       crops: {},
+      images: [],
     };
-  }
 
-  componentDidMount() {
-
+    this.allowedImageFormats = ['image/jpeg', 'image/jpg', 'image/png'];
   }
 
   async requestAndroid(isCam) {
+    if (this.state.images.length >= 5) {
+      Toast.show('Bạn chỉ được chọn tối đa 5 ảnh')
+      return
+    }
     try {
       const granted = await PermissionsAndroid.requestPermission(
         PermissionsAndroid.PERMISSIONS.CAMERA,
@@ -110,14 +120,14 @@ export default class question extends Component {
           ImagePicker.launchCamera(options, (response) => {
             if (response.didCancel) return;
             if (response.uri) {
-              // this.uploadImage(position, response);
+              this.setState({ images: [...this.state.images, response] })
             }
           });
         } else {
           ImagePicker.launchImageLibrary(options, (response) => {
             if (response.didCancel) return;
             if (response.uri) {
-              // this.uploadImage(position, response);
+              this.setState({ images: [...this.state.images, response] })
             }
           });
         }
@@ -130,6 +140,10 @@ export default class question extends Component {
   }
 
   requestIos(isCam) {
+    if (this.state.images.length >= 5) {
+      Toast.show('Bạn chỉ được chọn tối đa 5 ảnh')
+      return
+    }
     const options = {
       quality: 1.0,
       maxWidth: 500,
@@ -144,7 +158,7 @@ export default class question extends Component {
           ImagePicker.launchImageLibrary(options, (response) => {
             if (response.didCancel) return;
             if (response.uri) {
-              // this.uploadImage(position, response);
+              this.setState({ images: [...this.state.images, response] })
             }
           });
         } else {
@@ -157,7 +171,7 @@ export default class question extends Component {
           ImagePicker.launchCamera(options, (response) => {
             if (response.didCancel) return;
             if (response.uri) {
-              // this.uploadImage(position, response);
+              this.setState({ images: [...this.state.images, response] })
             }
           });
         } else {
@@ -179,17 +193,75 @@ export default class question extends Component {
     this.setState({ crops: filter });
   }
 
+  async didPressSubmit() {
+    const { navigation } = this.props;
+    const { question, answer, images, crops } = this.state;
+    if (Object.keys(crops).length == 0) {
+      Toast.show('Bạn chưa chọn loại cây trồng')
+      return
+    }
+    if (question.length == 0) {
+      Toast.show('Bạn chưa điền câu hỏi')
+      return
+    }
+    if (answer.length == 0) {
+      Toast.show('Bạn chưa điền bệnh lý câu trồng')
+      return
+    }
+    if (images.length == 0) {
+      Toast.show('Bạn cần chọn ít nhất 1 ảnh')
+      return
+    }
+    const token = await STG.getData('token')
+    const userInfo = await STG.getData('user')
+    this.setState({ loading: true })
+    var bodyFormData = new FormData();
+    bodyFormData.append('cropsId', crops.cropsId);
+    bodyFormData.append('subscriber', userInfo.subscribe);
+    bodyFormData.append('question', question);
+    bodyFormData.append('pathological', answer);
+    images.map(e => {
+      bodyFormData.append('listImage', {
+        uri: e.uri,
+        type: '*/*',
+        name: e.fileName,
+        data: e.data,
+      });
+    })
+    axios({
+      method: 'POST',
+      url: HOST.BASE_URL + '/appcontent/question-answer/create-question',
+      data: bodyFormData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': 'bearer' + token.access_token,
+      }
+    }).then(r => {
+      this.setState({ loading: false })
+      if (r.status != 200) {
+        Toast.show('Lỗi xảy ra, mời bạn thử lại')
+        return;
+      }
+      navigation.pop();
+      if (this.getParam().updateList) {
+        this.getParam().updateList()
+      }
+      Toast.show('Tạo câu hỏi thành công')
+    }).catch(e => {
+      this.setState({ loading: false })
+      Toast.show('Lỗi xảy ra, mời bạn thử lại')
+      console.log(e)
+    })
+  }
+
+  getParam() {
+    const { navigation: { state: { params } } } = this.props;
+    return params;
+  }
+
   render() {
     const { navigation } = this.props;
-    const { crops, question, answer } = this.state;
-    const options = {
-      quality: 1.0,
-      maxWidth: 500,
-      maxHeight: 500,
-      storageOptions: {
-        skipBackup: true
-      }
-    };
+    const { crops, question, answer, images, loading } = this.state;
     return (
       <Container>
         <Header navigation={navigation} title={'Bác sỹ cây trồng'} />
@@ -244,39 +316,64 @@ export default class question extends Component {
             </TouchableOpacity>
           </View>
 
+          {images.length != 0 ?
+            <View>
+              <ScrollView
+                style={{ marginRight: 10, marginLeft: 10, marginBottom: 10 }}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+              >
+                {images.map((item) => {
+                  return (
+                    <TouchableOpacity onPress={() => {
+                      const removed = remove(this.state.images, item);
+                      this.setState({ images: removed });
+                    }}>
+                      <View style={{
+                        marginRight: 10,
+                        borderRadius: 10,
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      }}>
+                        <Image
+                          style={{ width: 70, height: 70, borderRadius: 8 }}
+                          source={{ uri: item.uri }}
+                        />
+                        <Image
+                          style={{ position: 'absolute', width: 25, height: 25, top: 3, right: 3 }}
+                          source={require('../../assets/images/close.png')}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                  )
+                })}
+              </ScrollView>
+            </View> : <View style={{ height: 70 }} />
+          }
+
+          <View style={{ padding: 15 }}>
+            {loading ?
+              <ActivityIndicator size="large" color="#00A7DC" style={{ marginTop: 15 }} />
+              :
+              <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => {
+                this.didPressSubmit()
+              }}>
+                <Text style={styles.regularText}>{'Gửi'}</Text>
+              </Button>}
+          </View>
         </Content>
       </Container>
     );
-  }
-
-  async requestUser(r) {
-    try {
-      const uInfo = await API.auth.userInfo({});
-      STG.saveData('user', uInfo.data);
-      NavigationService.navigate('Tabbar', {});
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  async didPressSubmit() {
-    const validation_results = validate(this.state.login_info, validations);
-    this.setState({ ...this.state, show_validation: true });
-    if (validation_results.length > 0) {
-      alert_validation(validation_results);
-    } else {
-      this.didLogin();
-    }
   }
 }
 
 const styles = StyleSheet.create({
   btn_sign_in: {
     marginTop: 30,
-    marginRight: 50,
-    marginLeft: 50,
+    width: 120,
     borderRadius: 8,
     fontWeight: 'bold',
+    alignSelf: 'center',
     backgroundColor: '#4B8266',
   },
   btn_forgot_password: {

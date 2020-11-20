@@ -19,7 +19,7 @@ const validations = {
     label: 'Phone',
     validations: [
       required,
-      max(10),
+      max(11),
     ]
   },
   password: {
@@ -36,8 +36,8 @@ export default class login extends Component {
     super(props);
     this.state = {
       login_info: {
-        email: false,
-        password: false
+        email: '84915286679',
+        password: 'password1',
       },
       show_validation: false,
       modalVisible: false,
@@ -69,8 +69,7 @@ export default class login extends Component {
         console.warn(code, message);
       })
     STG.getData('credential').then(d => {
-      console.log(d)
-      if (d) {
+      if (d && d.phone != '' && d.pass != '') {
         this.setState({
           login_info: {
             ...login_info,
@@ -82,10 +81,6 @@ export default class login extends Component {
         })
       }
     })
-  }
-
-  networkConnectionChange = (isConnected) => {
-    this.setState({ isConnected });
   }
 
   render() {
@@ -170,8 +165,8 @@ export default class login extends Component {
     const { login_info: { email, password } } = this.state;
     this.setState({ loading: true })
     var bodyFormData = new FormData();
-    bodyFormData.append('username', "84915286679");
-    bodyFormData.append('password', "password1");
+    bodyFormData.append('username', email);
+    bodyFormData.append('password', password);
     bodyFormData.append('grant_type', 'password');
     bodyFormData.append('scopes', 'read');
     axios({
@@ -200,9 +195,17 @@ export default class login extends Component {
   }
 
   async requestUser(r) {
+    const { login_info } = this.state;
     try {
       const uInfo = await API.auth.userInfo({});
       STG.saveData('user', uInfo.data);
+      this.setState({
+        login_info: {
+          ...login_info,
+          password: false,
+          email: false,
+        }
+      })
       NavigationService.navigate('Tabbar', {});
     } catch (e) {
       console.log(e);

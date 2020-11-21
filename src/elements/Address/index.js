@@ -23,18 +23,18 @@ export default class address extends Component {
 
   componentDidMount() {
     setTimeout(() => {
-      Geocoder.init("AIzaSyAOG928Pk6j90AZJTMf6nSvS3OVaRi_FF4");
-      //   GetLocation.getCurrentPosition({
-      //     enableHighAccuracy: true,
-      //     timeout: 15000,
+      // Geocoder.init("AIzaSyDmYVdp5aQHEdqJtb-iDmm939_csRFa2FY");
+      // GetLocation.getCurrentPosition({
+      //   enableHighAccuracy: true,
+      //   timeout: 15000,
+      // })
+      //   .then(location => {
+      //     this.getWeather(location);
       //   })
-      //     .then(location => {
-      //       this.getWeather(location);
-      //     })
-      //     .catch(error => {
-      //       const { code, message } = error;
-      //       console.warn(code, message);
-      //     }, 1000)
+      //   .catch(error => {
+      //     const { code, message } = error;
+      //     console.warn(code, message);
+      //   }, 1000)
     })
   }
 

@@ -222,7 +222,6 @@ export default class social extends Component {
             }
             onEndReachedThreshold={0.4}
             onEndReached={() => this.onLoadMore()}
-          // onScroll={(e) => console.log(e.nativeEvent.contentOffset.y)}
           />
 
           <Button testID="BTN_SIGN_IN" block primary style={[styles.btn_sign_in, styles.floating]} onPress={() => {

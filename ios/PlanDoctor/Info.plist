@@ -29,6 +29,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Bác sỹ cây trồng cần truy cập Bộ sưu tập ảnh của bạn cho việc cập nhật thông tin người dùng.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Bác sỹ cây trồng cần truy cập vị trí của bạn cho việc định vị vùng thời tiết nhanh chóng nhất</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -37,6 +39,9 @@
 	<string>Bác sỹ cây trồng cần truy cập vị trí của bạn cho việc định vị vùng thời tiết nhanh chóng nhất</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Bác sỹ cây trồng cần sử dụng Micro của bạn cho việc thu âm.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>不良箇所の写真や資格証のアップロードのためにスマテンが写真へのアクセスを求めています。
+スマテンの写真へのアクセスを許可してください。</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Bác sỹ cây trồng cần truy cập Bộ sưu tập ảnh của bạn cho việc cập nhật thông tin người dùng.</string>
 	<key>UIAppFonts</key>
@@ -79,10 +84,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>不良箇所の写真や資格証のアップロードのためにスマテンが写真へのアクセスを求めています。
-スマテンの写真へのアクセスを許可してください。</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Bác sỹ cây trồng cần truy cập Bộ sưu tập ảnh của bạn cho việc cập nhật thông tin người dùng.</string>
 </dict>
 </plist>

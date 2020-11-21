@@ -46,6 +46,52 @@ const WIND = ['Bắc',
   'Tây Bắc',
   'Bắc Tây Bắc']
 
+function Winding(deg) {
+  if (deg == null) return "-";
+  else if (deg >= 11.25 && deg < 33.75) return "Bắc Đông Bắc";
+  else if (deg >= 33.75 && deg < 56.25) return "Đông Bắc";
+  else if (deg >= 56.25 && deg < 78.75) return "Đông Đông Bắc";
+  else if (deg >= 78.75 && deg < 101.25) return "Đông";
+  else if (deg >= 101.25 && deg < 123.75) return "Đông Đông Nam";
+  else if (deg >= 123.75 && deg < 146.25) return "Đông Nam";
+  else if (deg >= 146.25 && deg < 168.75) return "Nam Đông Nam";
+  else if (deg >= 168.75 && deg < 191.25) return "Nam";
+  else if (deg >= 191.25 && deg < 213.75) return "Nam Tây Nam";
+  else if (deg >= 213.75 && deg < 236.25) return "Tây Nam";
+  else if (deg >= 236.25 && deg < 258.75) return "Tây Tây Nam";
+  else if (deg >= 258.75 && deg < 281.25) return "Tây";
+  else if (deg >= 281.25 && deg < 303.75) return "Tây Tây Bắc";
+  else if (deg >= 303.75 && deg < 326.25) return "Tây Bắc";
+  else if (deg >= 326.25 && deg < 348.75) return "Bắc Tây Bắc";
+  else if (deg >= 348.75 || deg < 11.25) return "Bắc";
+  else return "-";
+}
+
+function formatAqi(saqi) {
+  if (saqi == null) {
+    return "-"
+  } else {
+    const aqi = Math.round(saqi)
+    if (aqi >= 0 && aqi <= 50) return "Tốt";
+    else if (aqi >= 51 && aqi <= 100) return "Trung bình";
+    else if (aqi >= 101 && aqi <= 150) return "Kém";
+    else if (aqi >= 151 && aqi <= 200) return "Xấu";
+    else if (aqi >= 201 && aqi <= 300) return "Rất xấu";
+    else if (aqi > 300) return "Nguy hại";
+    else return "-";
+  }
+}
+
+function formatUv(uv) {
+  if (uv == null) return "-";
+  else if (uv >= 0 && uv <= 2) return "Thấp";
+  else if (uv >= 3 && uv <= 5) return "Trung bình";
+  else if (uv >= 6 && uv <= 7) return "Cao";
+  else if (uv >= 8 && uv <= 10) return "Rất cao";
+  else if (uv >= 11) return "Nguy hại";
+  else return "-";
+}
+
 export default class weatherHead extends Component {
 
   constructor(props) {
@@ -85,6 +131,7 @@ export default class weatherHead extends Component {
       if (weather.data.statusCode != 200) {
         return
       }
+      console.log('===>', weather);
       this.setState({ loading: false });
       this.setState({ weather: weather.data.data });
     } catch (e) {
@@ -99,8 +146,8 @@ export default class weatherHead extends Component {
     const detail = [
       result && Math.round(result.temperatureFeel).toString() || '',
       result && Math.round(result.probability_rain).toString() || '',
-      result && 'Thấp' || '',
-      result && 'Bình thường' || '',
+      result && formatUv(weather.uvIndex) || '',
+      result && formatAqi(weather.dataPamair.aqi.value) || '',
       result && Math.round(result.wind_speed).toString() || '',
       result && Math.round(result.relative_humidity).toString() || '',
     ]
@@ -145,7 +192,7 @@ export default class weatherHead extends Component {
         <View style={{ flex: 1, padding: 5 }}>
           {UNIT.map((e, index) => {
             return (
-              <ROW title={e.title} value={this.getDetail()[index] + e.unit + (e.windy && resultGmos && resultGmos.wind_direction ? ` | ${WIND[resultGmos.wind_direction]}` : '')} />
+              <ROW title={e.title} value={this.getDetail()[index] + e.unit + (e.windy && resultGmos && resultGmos.wind_direction ? ` | ${Winding(resultGmos.wind_direction)}` : '')} />
             )
           })}
         </View>

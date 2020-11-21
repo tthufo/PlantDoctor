@@ -1,46 +1,48 @@
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, Platform, TouchableOpacity, Image, FlatList, Dimensions, RefreshControl, ScrollView,
+  View, StyleSheet, Platform, Image, FlatList, Dimensions, RefreshControl, ScrollView,
 } from 'react-native';
 import { Container, Text } from 'native-base';
-import Toast from 'react-native-simple-toast';
 import GetLocation from 'react-native-get-location'
-import STG from '../../../service/storage';
+import IC from '../../elements/icon';
 import API from '../../apis';
 import _ from 'lodash';
 
 const os = Platform.OS;
 
-const numColumns = 7;
+const numColumns = 4;
 const size = (Dimensions.get('window').width / numColumns);
+const widthSize = (Dimensions.get('window').width / 1);
 
 export default class weather extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      isRefreshing: false,
-      crops: [],
-      offset: 0,
-      mode: 0,
+      weather: [],
+      isRefreshing: true,
     };
     this.onRefresh = _.debounce(this.onRefresh, 500, { leading: true, trailing: false });
   }
 
   componentDidMount() {
     setTimeout(() => {
-      GetLocation.getCurrentPosition({
-        enableHighAccuracy: true,
-        timeout: 15000,
-      })
-        .then(location => {
-          this.getWeather(location);
-        })
-        .catch(error => {
-          const { code, message } = error;
-          console.warn(code, message);
-        })
+      this.getLocation();
     }, 500)
+  }
+
+  getLocation() {
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 15000,
+    })
+      .then(location => {
+        this.getWeather(location);
+      })
+      .catch(error => {
+        const { code, message } = error;
+        console.warn(code, message);
+      })
   }
 
   async getWeather(location) {
@@ -50,57 +52,116 @@ export default class weather extends Component {
         longtitude: 105.834160,//location.longitude,
         type: 2,
       });
-      // console.log('==>', weather)
+      this.setState({ isRefreshing: false });
+      if (weather.data.statusCode != 200) {
+        return
+      }
+      this.setState({ weather: weather.data && weather.data.data.resultGmos });
 
     } catch (e) {
+      this.setState({ isRefreshing: false });
       console.log(e)
     }
   }
 
   onRefresh() {
-    this.setState({ isRefreshing: true, offset: 0 }, () => {
-      this.searchCrops()
+    this.setState({ isRefreshing: true }, () => {
+      this.getLocation()
     });
   }
 
   render() {
     const { navigation } = this.props;
-    const { crops, isRefreshing, mode } = this.state;
+    const { crops, isRefreshing, mode, weather } = this.state;
+    var d = new Date();
+    var h = d.getHours();
+    const ICON = h <= 19 && h >= 7 ? IC.DAY : IC.NIGHT
     return (
-      <View style={{ flexGrow: 1, alignItems: 'center', padding: 0 }}>
+      <Container>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: 50 }}>
+          <View style={{ width: size, alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ width: size, color: '#4B8266', fontWeight: 'bold', textAlign: 'center' }}>
+              Thời gian
+          </Text>
+          </View>
+          <View style={{ width: size, alignItems: 'center', justifyContent: 'center' }}>
+            <Image
+              style={{ height: 30, width: 30 }}
+              source={require('../../../assets/images/ic_temp.png')}
+            />
+          </View>
+          <View style={{ width: size, alignItems: 'center', justifyContent: 'center' }}>
+            <Image
+              style={{ height: 30, width: 30 }}
+              source={require('../../../assets/images/ic_wind.png')}
+            />
+          </View>
+          <View style={{ width: size, alignItems: 'center', justifyContent: 'center' }}>
+            <Image
+              style={{ height: 30, width: 30 }}
+              source={require('../../../assets/images/ic_hum.png')}
+            />
+          </View>
+        </View>
+
+        <View style={{ height: 1, width: widthSize, backgroundColor: '#4B8266' }} />
+
         <FlatList
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
-          data={[1, 2, 3, 4, 5, 6, 7]}
+          data={weather}
           renderItem={({ item, index }) => (
-            <View
-              style={{ width: size, justifyContent: 'center', alignItems: 'center', paddingTop: 40 }}>
-              <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{item}</Text>
-              <Image
-                style={{ height: 30, width: 30, marginTop: 20 }}
-                source={require('../../../assets/images/dump.png')}
-              />
+            <View>
+              <View
+                style={{
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                  height: 60,
+                }}>
+                <View style={{ width: size, alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 5 }}>{item.time.split(' ')[0]}</Text>
+                  <Image
+                    style={{ height: 30, width: 30 }}
+                    source={ICON[item.weather].icon || ''}
+                  />
+                </View>
+                <View style={{ width: size, alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ fontWeight: 'bold', fontSize: 20 }}>{Math.round(item.air_temperature)}°C</Text>
+                </View>
+                <View style={{ width: size, alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{Math.round(item.wind_speed)} km/h</Text>
+                  <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{'item'}</Text>
+                </View>
+                <View style={{ width: size, alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{Math.round(item.probability_rain)}%</Text>
+                </View>
+              </View>
+              <View style={{ height: 0.5, width: widthSize, backgroundColor: 'black' }} />
             </View>
           )}
-          numColumns={numColumns}
+          numColumns={1}
           keyExtractor={(item, index) => index}
-          contentContainerStyle={{
-            flexDirection: 'row',
-          }}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={() => this.onRefresh()}
+            />
+          }
         />
-      </View>
+      </Container>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  item: {
-    flex: 1,
-    margin: 3,
-  },
-  image: {
-    marginTop: 26,
-    height: 40,
-    width: 40
-  },
+  // item: {
+  //   flex: 1,
+  //   margin: 3,
+  // },
+  // image: {
+  //   marginTop: 26,
+  //   height: 40,
+  //   width: 40
+  // },
 });

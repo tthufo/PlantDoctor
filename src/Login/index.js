@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Platform, ActivityIndicator, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { Container, Content, Button, Text } from 'native-base';
 import GetLocation from 'react-native-get-location'
+// import Geocoder from 'react-native-geocoding';
 import InputStyled from '../elements/Input/styled';
 import validate, { alert_validation, max, required } from '../elements/Input/validators';
 import Toast from 'react-native-simple-toast';
@@ -57,12 +58,19 @@ export default class login extends Component {
 
   componentDidMount() {
     const { login_info } = this.state;
+    // Geocoder.init("AIzaSyBtcquSDhkTEk2ydwLyVT-mWDys1hI93n0");
     GetLocation.getCurrentPosition({
       enableHighAccuracy: true,
       timeout: 15000,
     })
       .then(location => {
         console.log(location);
+        // Geocoder.from(21.027763, 105.834160)
+        //   .then(json => {
+        //     var addressComponent = json.results[0].address_components[0];
+        //     console.log(addressComponent);
+        //   })
+        //   .catch(error => console.warn(error));
       })
       .catch(error => {
         const { code, message } = error;

@@ -746,7 +746,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = vn.com.plantdoctor;
+				PRODUCT_BUNDLE_IDENTIFIER = vn.weatherplus.bsct;
 				PRODUCT_NAME = PlanDoctor;
 				PROVISIONING_PROFILE_SPECIFIER = plant_doc_dev;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -772,7 +772,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = vn.com.plantdoctor;
+				PRODUCT_BUNDLE_IDENTIFIER = vn.weatherplus.bsct;
 				PRODUCT_NAME = PlanDoctor;
 				PROVISIONING_PROFILE_SPECIFIER = plant_doc_dev;
 				SWIFT_VERSION = 5.0;

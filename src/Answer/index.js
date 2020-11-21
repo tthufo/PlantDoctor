@@ -4,9 +4,12 @@ import {
   RefreshControl, TextInput, KeyboardAvoidingView, Keyboard, SafeAreaView,
 } from 'react-native';
 import { Text } from 'native-base';
+import { Header } from '../elements';
 import ImagePicker from 'react-native-image-picker';
 import Toast from 'react-native-simple-toast';
+import axios from 'axios';
 import STG from '../../service/storage';
+import HOST from '../apis/host';
 import API from '../apis';
 import _ from 'lodash';
 
@@ -32,6 +35,8 @@ export default class social extends Component {
       condition: { filter: [], status: [] },
       isShowKeyboard: false,
       image: {},
+      text: '',
+      quest: this.getParam().question,
     };
     this._keyboardDidShow = this._keyboardDidShow.bind(this);
     this._keyboardDidHide = this._keyboardDidHide.bind(this);
@@ -52,8 +57,8 @@ export default class social extends Component {
   componentDidMount() {
     this.getQuestion(false);
     const iOS = os == 'ios'
-    this.keyboardDidShowListener = Keyboard.addListener(iOS ? 'keyboardWillShow' : 'keyboardDidShow', this._keyboardDidShow);
-    this.keyboardDidHideListener = Keyboard.addListener(iOS ? 'keyboardWillHide' : 'keyboardDidHide', this._keyboardDidHide);
+    this.keyboardDidShowListener = Keyboard.addListener(iOS ? 'keyboardDidShow' : 'keyboardDidShow', this._keyboardDidShow);
+    this.keyboardDidHideListener = Keyboard.addListener(iOS ? 'keyboardDidHide' : 'keyboardDidHide', this._keyboardDidHide);
   }
 
   componentWillMount() {
@@ -71,8 +76,7 @@ export default class social extends Component {
   }
 
   async getQuestion(loadMore) {
-    const { offset } = this.state;
-    const quest = this.getParam().question;
+    const { offset, quest } = this.state;
     try {
       const question = await API.user.getAnswer({
         questionId: this.getParam().question.questionId,
@@ -105,6 +109,64 @@ export default class social extends Component {
       console.log(e)
       this.setState({ isRefreshing: false });
     }
+  }
+
+  async postQuestion() {
+    const { text, image, quest } = this.state;
+    if (text.length == 0) {
+      Toast.show('Bạn chưa chọn nhập câu trả lời')
+      return
+    }
+    const token = await STG.getData('token')
+    const userInfo = await STG.getData('user')
+    this.setState({ loading: true })
+    var bodyFormData = new FormData();
+
+    bodyFormData.append('questionId', this.getParam().question.questionId);
+    bodyFormData.append('cropsId', this.getParam().question.cropsId);
+    bodyFormData.append('subscriber', userInfo.subscribe);
+    bodyFormData.append('answer', text);
+    bodyFormData.append('type', userInfo.type);
+    if (Object.keys(image).length != 0) {
+      bodyFormData.append('listImage', {
+        uri: image.uri,
+        type: '*/*',
+        name: image.fileName,
+        data: image.data,
+      });
+    }
+    axios({
+      method: 'POST',
+      url: HOST.BASE_URL + '/appcontent/question-answer/create-answer',
+      data: bodyFormData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': 'bearer' + token.access_token,
+      }
+    }).then(r => {
+      this.setState({ loading: false })
+      if (r.status != 200) {
+        Toast.show('Lỗi xảy ra, mời bạn thử lại')
+        return;
+      }
+      Keyboard.dismiss();
+      this.setState({ text: '', image: {} })
+      this.setState(prevState => ({
+        quest: {
+          ...prevState.quest,
+          totalAnswer: this.state.quest.totalAnswer + 1,
+        }
+      }))
+      this.input.clear();
+      this.getQuestion(false);
+      if (this.getParam().updateList) {
+        this.getParam().updateList()
+      }
+    }).catch(e => {
+      this.setState({ loading: false })
+      Toast.show('Lỗi xảy ra, mời bạn thử lại')
+      console.log(e)
+    })
   }
 
   onRefresh() {
@@ -252,9 +314,11 @@ export default class social extends Component {
   }
 
   render() {
-    const { userInfo, question, isRefreshing, isShowKeyboard, image } = this.state;
+    const { navigation } = this.props;
+    const { userInfo, question, isRefreshing, isShowKeyboard, image, text } = this.state;
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#0aa2dd' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#4B8266' }}>
+        <Header navigation={navigation} title={'Câu hỏi'} />
 
         <KeyboardAvoidingView
           keyboardVerticalOffset={Platform.select({ ios: 0, android: 500 })}
@@ -344,8 +408,8 @@ export default class social extends Component {
                 autoCorrect={false}
                 typeSet
                 style={{ alignSelf: 'center', paddingLeft: 10, paddingRight: 40, width: widthSize - 90, fontSize: 15, height: 40, color: 'black' }}
-                value={this.state.textInput}
-                onChangeText={(textInput) => console.log()}
+                value={text}
+                onChangeText={(text) => this.setState({ text })}
                 placeholder={'Nhập câu trả lời của bạn'}
               />
               <View style={{ position: 'absolute', top: 0, right: 0 }}>
@@ -361,7 +425,7 @@ export default class social extends Component {
             </View>
             <View>
               <TouchableOpacity onPress={() => {
-                this.input.clear();
+                this.postQuestion()
               }}>
                 <Image
                   style={{ width: 35, height: 35 }}

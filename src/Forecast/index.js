@@ -1,19 +1,25 @@
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, Platform, TouchableOpacity, Image, FlatList, Dimensions, RefreshControl,
+  View, StyleSheet, Platform, TouchableOpacity, Image, FlatList, Dimensions, RefreshControl, ScrollView,
 } from 'react-native';
 import { Container, Text } from 'native-base';
 import Toast from 'react-native-simple-toast';
-import STG from '../../../service/storage';
-import API from '../../apis';
-import WeatherHead from '../../elements/WeatherHead';
-import { Header } from '../../elements';
+import STG from '../../service/storage';
+import API from '../apis';
+import { Header } from '../elements';
+import WeatherHeader from '../elements/WeatherHead';
+import Hour24 from './24h';
 import _ from 'lodash';
 
 const os = Platform.OS;
 
-const numColumns = 3;
-const size = (Dimensions.get('window').width / numColumns) - 10;
+const numColumns = 7;
+const size = (Dimensions.get('window').width / numColumns);
+
+const COLOR = ['#4B8266', '#FAECDF']
+const COLOR1 = ['#FAECDF', '#4B8266']
+const CC = ['white', '#4B8266']
+const CC1 = ['#4B8266', 'white']
 
 export default class weather extends Component {
 
@@ -23,6 +29,7 @@ export default class weather extends Component {
       isRefreshing: false,
       crops: [],
       offset: 0,
+      mode: 0,
     };
     this.didPressSubmit = _.debounce(this.didPressSubmit, 500, { leading: true, trailing: false });
     this.onRefresh = _.debounce(this.onRefresh, 500, { leading: true, trailing: false });
@@ -30,7 +37,7 @@ export default class weather extends Component {
   }
 
   componentDidMount() {
-    this.searchCrops();
+    // this.searchCrops();
   }
 
   async searchCrops() {
@@ -44,7 +51,7 @@ export default class weather extends Component {
         offset,
       })
       this.setState({ isRefreshing: false });
-      console.log('==>', crops)
+      // console.log('==>', crops)
       if (crops.data.statusCode != 200) {
         Toast.show('Lỗi xảy ra, mời bạn thử lại')
         return
@@ -63,56 +70,63 @@ export default class weather extends Component {
 
   onLoadMore() {
     this.searchCrops();
+    // if (!this.state.loading) {
+    //   this.page = this.page + 1; 
+    //   this.fetchUser(this.page); 
+    // }
   }
 
   render() {
     const { navigation } = this.props;
-    const { crops, isRefreshing } = this.state;
+    const { crops, isRefreshing, mode } = this.state;
     return (
       <Container style={{ backgroundColor: 'white' }}>
         <Header navigation={navigation} title={'Thời tiết'} />
-        <View style={{ flexDirection: 'column', flex: 1 }}>
+        {/* <ScrollView style={{ flexDirection: 'column', flex: 1 }}> */}
 
-          <WeatherHead />
+        <WeatherHeader />
 
-          <View style={{ flexGrow: 1, alignItems: 'center', padding: 0 }}>
+        <View style={{ flexDirection: 'row', height: 50, justifyContent: 'center' }}>
+          <View style={{ flex: 1, backgroundColor: COLOR[mode], justifyContent: 'center' }}>
+            <TouchableOpacity onPress={() => this.setState({ mode: 0 })}>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', alignSelf: 'center', color: CC[mode] }}>{'24 giờ tới'}</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ flex: 1, backgroundColor: COLOR1[mode], justifyContent: 'center' }}>
+            <TouchableOpacity onPress={() => this.setState({ mode: 1 })}>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', alignSelf: 'center', color: CC1[mode] }}>{'7 ngày tới'}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View>
+          <Hour24 />
+        </View>
+
+        {/* <View style={{ flexGrow: 1, alignItems: 'center', padding: 0 }}>
             <FlatList
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
-              data={crops}
+              data={[1, 2, 3, 4, 5, 6, 7]}
               renderItem={({ item, index }) => (
-                <TouchableOpacity onPress={() => console.log('sfsfd')}>
-                  <View
-                    style={styles.itemContainer}>
-                    <Image
-                      style={styles.item}
-                      source={{ uri: item.image }}
-                    />
-                    <Text style={{ alignSelf: 'center', marginBottom: 10 }}>{item.cropsName}</Text>
-                    {item.check &&
-                      <View style={{ position: 'absolute', top: 3, left: 5, right: 5, bottom: 5, borderRadius: 12, borderWidth: 1, borderColor: 'black' }} />}
-                    {item.check && <Image
-                      style={{ width: 30, height: 30, position: 'absolute', right: 10, top: 10 }}
-                      source={require('../../../assets/images/select_crops.png')}
-                    />}
-                  </View>
-                </TouchableOpacity>
+                <View
+                  style={{ width: size, justifyContent: 'center', alignItems: 'center', paddingTop: 40 }}>
+                  <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{item}</Text>
+                  <Image
+                    style={{ height: 30, width: 30, marginTop: 20 }}
+                    source={require('../../assets/images/dump.png')}
+                  />
+                </View>
               )}
               numColumns={numColumns}
               keyExtractor={(item, index) => index}
-              refreshControl={
-                <RefreshControl
-                  style={{ color: 'red' }}
-                  refreshing={isRefreshing}
-                  onRefresh={this.onRefresh}
-                />
-              }
-              onEndReachedThreshold={0.4}
-              onEndReached={this.handleLoadMore}
+              contentContainerStyle={{
+                flexDirection: 'row',
+              }}
             />
-          </View>
+          </View> */}
 
-        </View>
+        {/* </ScrollView> */}
       </Container>
     );
   }

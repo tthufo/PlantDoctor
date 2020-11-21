@@ -17,6 +17,7 @@ import FilterScreen from '../src/Socialtab/Filter';
 import QuestionScreen from '../src/Question';
 import AnswerScreen from '../src/Answer';
 import UpdateScreen from '../src/Usertab/Update';
+import ForecastScreen from '../src/Forecast';
 
 const AppNavigator = createStackNavigator({
   Root: { screen: RootScreen },
@@ -37,6 +38,7 @@ const AppNavigator = createStackNavigator({
   Question: { screen: QuestionScreen },
   Answer: { screen: AnswerScreen },
   Update: { screen: UpdateScreen },
+  Forecast: { screen: ForecastScreen },
 }, {
   headerMode: 'none',
 });

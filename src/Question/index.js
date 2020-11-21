@@ -4,13 +4,12 @@ import {
   Alert, TouchableOpacity, TextInput, Image, PermissionsAndroid, ScrollView
 } from 'react-native';
 import { Container, Content, Button, Text } from 'native-base';
-import validate, { max, required } from '../elements/Input/validators';
+import { max, required } from '../elements/Input/validators';
 import { Header } from '../elements';
 import ImagePicker from 'react-native-image-picker';
 import Toast from 'react-native-simple-toast';
 import STG from "../../service/storage";
 import HOST from '../apis/host';
-import API from '../apis';
 import axios from 'axios';
 import NavigationService from '../../service/navigate';
 import _ from 'lodash';
@@ -58,11 +57,12 @@ export default class question extends Component {
 
   constructor(props) {
     super(props);
+    const { navigation: { state: { params } } } = props;
     this.state = {
       question: '',
       answer: '',
       loading: false,
-      crops: {},
+      crops: params.para ? params.para : {},
       images: [],
     };
 
@@ -353,7 +353,7 @@ export default class question extends Component {
 
           <View style={{ padding: 15 }}>
             {loading ?
-              <ActivityIndicator size="large" color="#00A7DC" style={{ marginTop: 15 }} />
+              <ActivityIndicator size="large" color="#4B8266" style={{ marginTop: 15 }} />
               :
               <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => {
                 this.didPressSubmit()

@@ -172,7 +172,7 @@ export default class social extends Component {
             data={question}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => {
-                NavigationService.navigate('Answer', { question: item });
+                NavigationService.navigate('Answer', { question: item, updateList: () => this.getQuestion(false) });
               }}>
                 <View
                   style={{ flex: 1 }}>

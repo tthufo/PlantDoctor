@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Platform, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, StyleSheet, Platform, TouchableOpacity, Image, ScrollView, ActivityIndicator } from 'react-native';
 import { Container, Content, Button, Text } from 'native-base';
 import GetLocation from 'react-native-get-location'
 import STG from '../../../service/storage';
@@ -7,8 +7,11 @@ import API from '../../apis';
 import HOST from '../../apis/host';
 import axios from 'axios';
 import { Header } from '../../elements';
+import IC from '../../elements/icon';
 import NavigationService from '../../../service/navigate';
+import Address from '../../elements/Address';
 import _ from 'lodash';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
 const os = Platform.OS;
 
@@ -53,14 +56,22 @@ export default class home extends Component {
       show_validation: false,
       modalVisible: false,
       token: null,
-      loading: false,
       isConnected: true,
       crops: [],
       selectedCrop: 0,
+      weather: {},
+      loading: true,
     };
   }
 
   componentDidMount() {
+    this.getLocation();
+    STG.getData('user').then(u => {
+      this.getCrops(u.subscribe);
+    })
+  }
+
+  getLocation() {
     GetLocation.getCurrentPosition({
       enableHighAccuracy: true,
       timeout: 15000,
@@ -72,20 +83,23 @@ export default class home extends Component {
         const { code, message } = error;
         console.warn(code, message);
       })
-    STG.getData('user').then(u => {
-      this.getCrops(u.subscribe);
-    })
   }
 
   async getWeather(location) {
+    this.setState({ loading: true });
     try {
       const weather = await API.home.getWeather({
         latitude: 21.027763,//location.latitude,
         longtitude: 105.834160,//location.longitude,
         type: 1,
       });
-
+      this.setState({ loading: false });
+      if (weather.data.statusCode != 200) {
+        return
+      }
+      this.setState({ weather: weather.data.data });
     } catch (e) {
+      this.setState({ loading: false });
       console.log(e)
     }
   }
@@ -107,7 +121,7 @@ export default class home extends Component {
         Toast.show('Lỗi xảy ra, mời bạn thử lại')
         return;
       }
-      const resign = r.data.data.map((e, index) => {
+      const resign = r.data.data.filter(e => e.cropsUserId != null).map((e, index) => {
         e.check = index == 0 ? true : false;
         return e;
       });
@@ -138,14 +152,18 @@ export default class home extends Component {
   }
 
   render() {
-    const { crops, selectedCrop } = this.state;
+    const { crops, selectedCrop, weather, loading } = this.state;
+    const resultGmos = weather.resultGmos && weather.resultGmos[0]
+    var d = new Date();
+    var h = d.getHours();
+    const ICON = h <= 19 && h >= 7 ? IC.DAY : IC.NIGHT
     return (
       <Container style={{ backgroundColor: 'white' }}>
         <Header height={20} />
         <Content>
           <View style={{ backgroundColor: '#4B8266', flex: 1, alignItems: 'center', padding: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
             <View style={{ height: 40, width: 40 }} />
-            <Text style={{ fontSize: 22, fontWeight: 'bold', color: 'white' }}>Hà nôi việt nam</Text>
+            <Address style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} />
             <TouchableOpacity onPress={() => console.log()}>
               <Image
                 style={{ width: 30, height: 30 }}
@@ -154,24 +172,32 @@ export default class home extends Component {
             </TouchableOpacity>
           </View>
           <View style={{ backgroundColor: '#4B8266', flex: 1, padding: 10, flexDirection: 'row', justifyContent: 'center' }}>
-            <TouchableOpacity onPress={() => console.log()}>
-              <Image
-                style={{ width: 70, height: 70 }}
-                source={require('../../../assets/images/dump.png')}
-              />
-            </TouchableOpacity>
-            <Text style={{ fontSize: 60, color: 'white' }}>22</Text>
+            {loading ? <ActivityIndicator size="large" color="white" />
+              :
+              <TouchableOpacity onPress={() => {
+                this.getLocation();
+              }}>
+                <Image
+                  style={{ width: 70, height: 70, marginRight: 5 }}
+                  source={resultGmos && ICON[resultGmos.weather].icon || ''}
+                />
+              </TouchableOpacity>}
+            <Text style={{ fontSize: 60, color: 'white' }}>{resultGmos && Math.round(resultGmos.air_temperature) || '--'}</Text>
             <Text style={{ fontSize: 30, color: 'white' }}>°C</Text>
           </View>
           <View style={{ backgroundColor: '#4B8266', flex: 1, padding: 10, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 17, color: 'white' }}>Nhiệt độ cảm nhận 21°C</Text>
-            <Text style={{ fontSize: 17, color: 'white' }}>Có mây và sương mù</Text>
+            <Text style={{ fontSize: 17, color: 'white' }}>{`Nhiệt độ cảm nhận ${resultGmos && Math.round(resultGmos.temperatureFeel).toString() || '--'}°C`} </Text>
+            <Text style={{ fontSize: 17, color: 'white' }}>{resultGmos && ICON[resultGmos.weather].name || '--'}</Text>
           </View>
-          <View style={{ backgroundColor: '#4B8266', marginTop: 0, alignContent: 'flex-start', flexDirection: 'row', justifyContent: 'center' }}>
-            <CON image={require('../../../assets/images/iqa.png')} title={`Chất lượng\nkhông khí`} value='00' />
-            <CON image={require('../../../assets/images/uv.png')} title="Chỉ số UV" value='00' />
-            <CON image={require('../../../assets/images/rain_home.png')} title="Khả năng mưa" value='00' />
-          </View>
+          <TouchableHighlight onPress={() => {
+            NavigationService.navigate('Forecast', {});
+          }} >
+            <View style={{ backgroundColor: '#4B8266', marginTop: 0, alignContent: 'flex-start', flexDirection: 'row', justifyContent: 'center' }}>
+              <CON image={require('../../../assets/images/iqa.png')} title={`Chất lượng\nkhông khí`} value={resultGmos && Math.round(resultGmos.relative_humidity).toString() || '--'} />
+              <CON image={require('../../../assets/images/uv.png')} title="Chỉ số UV" value={weather && weather.uvIndex || '--'} />
+              <CON image={require('../../../assets/images/rain_home.png')} title="Khả năng mưa" value={(resultGmos && Math.round(resultGmos.probability_rain).toString() || '--') + '%'} />
+            </View>
+          </TouchableHighlight>
           <View style={{ paddingRight: 10, paddingLeft: 10, flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#4B8266' }}>
             <TouchableOpacity onPress={() => console.log()}>
               <Image
@@ -228,7 +254,8 @@ export default class home extends Component {
 
           <View style={{ alignItems: 'center', flex: 1 }}>
             <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => {
-              NavigationService.navigate('Question', {});
+              const par = crops.filter(e => e.check == true)
+              NavigationService.navigate('Question', { para: par[0] });
             }}>
               <Text style={styles.regularText}>{'Đặt câu hỏi'}</Text>
             </Button>

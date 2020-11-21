@@ -173,7 +173,7 @@ export default class user extends Component {
             data={question}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => {
-                // NavigationService.navigate('News', { para: item });
+                NavigationService.navigate('Answer', { question: item, updateList: () => this.getQuestion(false) });
               }}>
                 <View
                   style={{ flex: 1 }}>

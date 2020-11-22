@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, TouchableOpacity, Image, FlatList, Dimensions, NativeModules, PermissionsAndroid,
+  View, StyleSheet, TouchableOpacity, Image, FlatList, Dimensions, NativeModules, PermissionsAndroid, Alert,
   RefreshControl, TextInput, KeyboardAvoidingView, Keyboard, SafeAreaView,
 } from 'react-native';
 import { Text } from 'native-base';
@@ -340,7 +340,7 @@ export default class social extends Component {
                     {index == 0 &&
                       <Image
                         style={styles.item}
-                        source={{ uri: item.cropsImage }}
+                        source={item.questionStatus == 1 ? require('../../assets/images/bg_checking.png') : { uri: item.urlImage && item.urlImage.length != 0 ? "".arr(item.urlImage)[0] : '' }}
                       />}
                     <View style={{ flexDirection: 'row', paddingLeft: 10, paddingRight: 10, paddingTop: 10 }}>
                       <Image
@@ -376,7 +376,7 @@ export default class social extends Component {
                     {index != 0 && item.urlImage &&
                       <Image
                         style={styles.item}
-                        source={{ uri: (item.urlImage.replace(/\["/g, "")).replace(/"\]/g, "") }}
+                        source={item.answerStatus == 1 ? require('../../assets/images/bg_checking.png') : { uri: item.urlImage && item.urlImage.length != 0 ? "".arr(item.urlImage)[0] : '' }}
                       />}
                     <View style={{ flex: 1, height: 1, backgroundColor: 'gray' }} />
                   </View>
@@ -414,7 +414,26 @@ export default class social extends Component {
               />
               <View style={{ position: 'absolute', top: 0, right: 0 }}>
                 <TouchableOpacity onPress={() => {
-                  this.callForHelp(false)
+                  Alert.alert(
+                    "",
+                    "Chọn ảnh cập nhật cho câu trả lời",
+                    [
+                      {
+                        text: "Bộ sưu tập",
+                        onPress: () => this.callForHelp(false),
+                      },
+                      {
+                        text: "Máy ảnh",
+                        onPress: () => this.callForHelp(true),
+                      },
+                      {
+                        text: "Bỏ qua",
+                        onPress: () => console.log(""),
+                        style: "cancel"
+                      }
+                    ],
+                    { cancelable: false }
+                  )
                 }}>
                   <Image
                     style={{ width: 35, height: 35 }}

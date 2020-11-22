@@ -89,8 +89,8 @@ export default class home extends Component {
     this.setState({ loading: true });
     try {
       const weather = await API.home.getWeather({
-        latitude: 21.027763,//location.latitude,
-        longtitude: 105.834160,//location.longitude,
+        latitude: location.latitude,
+        longtitude: location.longitude,
         type: 1,
       });
       this.setState({ loading: false });
@@ -193,7 +193,7 @@ export default class home extends Component {
             NavigationService.navigate('Forecast', {});
           }} >
             <View style={{ backgroundColor: '#4B8266', marginTop: 0, alignContent: 'flex-start', flexDirection: 'row', justifyContent: 'center' }}>
-              <CON image={require('../../../assets/images/iqa.png')} title={`Chất lượng\nkhông khí`} value={weather && weather.dataPamair && Math.round(weather.dataPamair.aqi.value).toString() || '--'} />
+              <CON image={require('../../../assets/images/iqa.png')} title={`Chất lượng\nkhông khí`} value={weather && weather.dataPamair && weather.dataPamair.aqi && Math.round(weather.dataPamair.aqi.value).toString() || '--'} />
               <CON image={require('../../../assets/images/uv.png')} title="Chỉ số UV" value={weather && weather.uvIndex || '--'} />
               <CON image={require('../../../assets/images/rain_home.png')} title="Khả năng mưa" value={(resultGmos && Math.round(resultGmos.probability_rain).toString() || '--') + '%'} />
             </View>

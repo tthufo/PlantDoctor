@@ -4,7 +4,7 @@ import { Container, Content, Button, Text } from 'native-base';
 import GetLocation from 'react-native-get-location'
 // import Geocoder from 'react-native-geocoding';
 import InputStyled from '../elements/Input/styled';
-import validate, { alert_validation, max, required } from '../elements/Input/validators';
+import validate, { alert_validation, max, min, required, validPhone } from '../elements/Input/validators';
 import Toast from 'react-native-simple-toast';
 import STG from "../../service/storage";
 import HOST from '../apis/host';
@@ -20,6 +20,7 @@ const validations = {
     label: 'Phone',
     validations: [
       required,
+      min(10),
       max(11),
     ]
   },
@@ -37,8 +38,8 @@ export default class login extends Component {
     super(props);
     this.state = {
       login_info: {
-        email: '84915286679',
-        password: 'password1',
+        email: false,
+        password: false,
       },
       show_validation: false,
       modalVisible: false,
@@ -135,7 +136,7 @@ export default class login extends Component {
                 unhidden validation={validations.password} showValidation={show_validation} />
               {
                 !this.state.loading && (
-                  <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didLogin()}>
+                  <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didPressSubmit()}>
                     <Text style={styles.regularText}>{'Đăng nhập'}</Text>
                   </Button>
                 )
@@ -173,7 +174,7 @@ export default class login extends Component {
     const { login_info: { email, password } } = this.state;
     this.setState({ loading: true })
     var bodyFormData = new FormData();
-    bodyFormData.append('username', email);
+    bodyFormData.append('username', validPhone(email));
     bodyFormData.append('password', password);
     bodyFormData.append('grant_type', 'password');
     bodyFormData.append('scopes', 'read');

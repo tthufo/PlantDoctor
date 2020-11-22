@@ -124,8 +124,8 @@ export default class weatherHead extends Component {
     this.setState({ loading: true });
     try {
       const weather = await API.home.getWeather({
-        latitude: 21.027763,//location.latitude,
-        longtitude: 105.834160,//location.longitude,
+        latitude: location.latitude,
+        longtitude: location.longitude,
         type: 1,
       });
       if (weather.data.statusCode != 200) {

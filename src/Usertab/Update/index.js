@@ -388,20 +388,27 @@ export default class user extends Component {
                 }}
               />
             </View>
-            {loading ?
-              <ActivityIndicator size="large" color="#00A7DC" style={{ marginTop: 15 }} />
-              :
-              <Button block primary style={styles.btn_sign} onPress={() => {
-                this.didPressSubmit();
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+              <TouchableOpacity onPress={() => {
+                navigation.pop();
               }}>
-                <Text style={styles.regularText}>{'Cập nhật'}</Text>
-              </Button>}
-            <Button block primary style={styles.btn_sign} onPress={() => {
+                <Text style={{ color: '#4B8266', fontWeight: 'bold', alignSelf: 'flex-end', margin: 20 }}>{'Bỏ qua'}</Text>
+              </TouchableOpacity>
+              {loading ?
+                <ActivityIndicator size="large" color="#4B8266" style={{ marginTop: 15 }} />
+                :
+                <Button block primary style={styles.btn_sign} onPress={() => {
+                  this.didPressSubmit();
+                }}>
+                  <Text style={styles.regularText}>{'Cập nhật'}</Text>
+                </Button>}
+            </View>
+            <TouchableOpacity onPress={() => {
               STG.clearData();
               navigation.popToTop();
             }}>
-              <Text style={styles.regularText}>{'Đăng xuất'}</Text>
-            </Button>
+              <Text style={{ color: '#4B8266', fontWeight: 'bold', alignSelf: 'flex-end', margin: 20 }}>{'Đăng xuất'}</Text>
+            </TouchableOpacity>
           </View>
         </Content>
       </Container >
@@ -415,7 +422,7 @@ const styles = StyleSheet.create({
     width: 120,
     borderRadius: 8,
     fontWeight: 'bold',
-    alignSelf: 'center',
+    alignSelf: 'flex-end',
     margin: 20,
     backgroundColor: '#4B8266',
   },

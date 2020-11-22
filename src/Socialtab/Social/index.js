@@ -75,6 +75,7 @@ export default class social extends Component {
       }
       const newQuest = question.data && question.data.data && question.data.data.list
       const totalQuest = question.data && question.data.data && question.data.data.totalRecord
+
       if (!loadMore) {
         this.setState({ question: newQuest }, () => {
           if (this.state.question.length >= totalQuest) {
@@ -178,7 +179,7 @@ export default class social extends Component {
                   style={{ flex: 1 }}>
                   <Image
                     style={styles.item}
-                    source={{ uri: item.cropsImage }}
+                    source={item.questionStatus == 1 ? require('../../../assets/images/bg_checking.png') : { uri: item.urlImage && item.urlImage.length != 0 ? "".arr(item.urlImage)[0] : '' }}
                   />
                   <View style={{ flexDirection: 'row', paddingLeft: 10, paddingRight: 10, paddingTop: 10 }}>
                     <Image

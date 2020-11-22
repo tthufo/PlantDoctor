@@ -48,8 +48,8 @@ export default class weather extends Component {
   async getWeather(location) {
     try {
       const weather = await API.home.getWeather({
-        latitude: 21.027763,//location.latitude,
-        longtitude: 105.834160,//location.longitude,
+        latitude: location.latitude,
+        longtitude: location.longitude,
         type: 2,
       });
       this.setState({ isRefreshing: false });

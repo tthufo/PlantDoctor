@@ -101,7 +101,7 @@ export default class listnews extends Component {
                 style={{ flex: 1 }}>
                 <Image
                   style={styles.item}
-                  source={{ uri: (item.urlImage.replace(/\["/g, "")).replace(/"\]/g, "") }}
+                  source={{ uri: item.urlImage && item.urlImage.length != 0 ? "".arr(item.urlImage)[0] : '' }}
                 />
                 <Text style={{ fontWeight: 'bold', margin: 5, color: '#4B8266', fontSize: 15 }}>{item.titlePost}</Text>
                 <Text style={{ margin: 5, fontSize: 13 }}>{item.summaryPost}</Text>

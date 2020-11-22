@@ -103,3 +103,13 @@ export const isPast = (value) => {
     return string.isPast;
   }
 }
+
+export const validPhone = (value) => {
+  var prefix = value.substring(0, 2);
+  if (value.length == 10 && prefix != '84') {
+    return '84' + value.substring(1);
+  }
+  if (value.length == 11) {
+    return value;
+  }
+}

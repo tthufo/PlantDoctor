@@ -179,7 +179,7 @@ export default class user extends Component {
                   style={{ flex: 1 }}>
                   <Image
                     style={styles.item}
-                    source={{ uri: item.cropsImage }}
+                    source={item.questionStatus == 1 ? require('../../../assets/images/bg_checking.png') : { uri: item.urlImage && item.urlImage.length != 0 ? "".arr(item.urlImage)[0] : '' }}
                   />
                   <View style={{ flexDirection: 'row', paddingLeft: 10, paddingRight: 10, paddingTop: 10 }}>
                     <Image

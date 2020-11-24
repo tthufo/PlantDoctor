@@ -319,6 +319,8 @@ PODS:
     - React
   - RNGestureHandler (1.8.0):
     - React
+  - RNReanimated (1.13.2):
+    - React-Core
   - RNScreens (2.14.0):
     - React-Core
   - RNVectorIcons (7.1.0):
@@ -388,6 +390,7 @@ DEPENDENCIES:
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - RNExitApp (from `../node_modules/react-native-exit-app`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - "toolbar-android (from `../node_modules/@react-native-community/toolbar-android`)"
@@ -482,6 +485,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-exit-app"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNReanimated:
+    :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNVectorIcons:
@@ -539,6 +544,7 @@ SPEC CHECKSUMS:
   RNCMaskedView: f5c7d14d6847b7b44853f7acb6284c1da30a3459
   RNExitApp: 7d81855142a4d11eb75f4f06fdebf5a950d7aef2
   RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
+  RNReanimated: e03f7425cb7a38dcf1b644d680d1bfc91c3337ad
   RNScreens: 2e278a90eb15092ed261d4f2271e3fc9b60d08d4
   RNVectorIcons: bc69e6a278b14842063605de32bec61f0b251a59
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196

@@ -191,7 +191,7 @@ export default class home extends Component {
             <Text style={{ fontSize: 17, color: 'white' }}>{resultGmos && ICON[resultGmos.weather].name || '--'}</Text>
           </View>
           <TouchableHighlight onPress={() => {
-            // NavigationService.navigate('Forecast', {});
+            NavigationService.navigate('Forecast', {});
           }} >
             <View style={{ backgroundColor: '#4B8266', marginTop: 0, alignContent: 'flex-start', flexDirection: 'row', justifyContent: 'center' }}>
               <CON image={require('../../../assets/images/iqa.png')} title={`Chất lượng\nkhông khí`} value={weather && weather.dataPamair && weather.dataPamair.aqi && Math.round(weather.dataPamair.aqi.value).toString() || '--'} />

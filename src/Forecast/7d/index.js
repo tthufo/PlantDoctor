@@ -14,6 +14,21 @@ const os = Platform.OS;
 const numColumns = 7;
 const size = (Dimensions.get('window').width / numColumns);
 
+const plays = 100;
+
+const LINE = ({ max, min, hay, means, meanest }) => {
+  return (
+    <View style={{ height: 390 - plays }}>
+      <View style={{ alignItems: 'center', position: 'absolute', left: -((size - 20) / 2) + 3, top: ((340 - plays) - hay) - ((min - meanest) * means) }}>
+        <Text style={{ color: '#4B8266', fontSize: 18, fontWeight: 'bold' }}>{max}°</Text>
+        <View style={{ borderRadius: 10, height: hay, width: 20, backgroundColor: 'green' }}>
+        </View>
+        <Text style={{ color: '#4B8266', fontSize: 18, fontWeight: 'bold' }}>{min}°</Text>
+      </View>
+    </View>
+  );
+}
+
 export default class weather extends Component {
 
   constructor(props) {
@@ -21,6 +36,7 @@ export default class weather extends Component {
     this.state = {
       isRefreshing: true,
       weather: [],
+      means: 0,
     };
     this.onRefresh = _.debounce(this.onRefresh, 500, { leading: true, trailing: false });
   }
@@ -52,12 +68,21 @@ export default class weather extends Component {
         longtitude: location.longitude,
         type: 3,
       });
-      console.log('==>', weather)
       this.setState({ isRefreshing: false });
       if (weather.data.statusCode != 200) {
         return
       }
+      console.log(weather)
+
       this.setState({ weather: weather.data && weather.data.data.resultGmos });
+      const maxs = weather.data.data.resultGmos.map(e => {
+        return Math.round(e.air_temperature_max)
+      })
+      const mins = weather.data.data.resultGmos.map(e => {
+        return Math.round(e.air_temperature_min)
+      })
+      const means = (340 - plays) / (Math.max(...maxs) - Math.min(...mins))
+      this.setState({ means })
     } catch (e) {
       this.setState({ isRefreshing: false });
       console.log(e)
@@ -78,12 +103,16 @@ export default class weather extends Component {
   }
 
   render() {
-    const { isRefreshing, weather } = this.state;
+    const { isRefreshing, weather, means } = this.state;
     var d = new Date();
     var h = d.getHours();
     const ICON = h <= 19 && h >= 7 ? IC.DAY : IC.NIGHT
+    const minest = weather.map(e => {
+      return Math.round(e.air_temperature_min)
+    })
+    console.log(means)
     return (
-      <View style={{ flexGrow: 1, alignItems: 'center', padding: 0 }}>
+      <View style={{ flexGrow: 1, alignItems: 'center' }}>
         <FlatList
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
@@ -95,16 +124,21 @@ export default class weather extends Component {
                   width: size - 0.5,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  height: 340,
+                  height: 520 - plays,
                 }}>
                 <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{this.days(item.time)}</Text>
                 <Image
                   style={{ height: 30, width: 30, marginTop: 20 }}
                   source={ICON[item.weather].icon || ''}
                 />
-                <View style={{ height: 200, width: 10, backgroundColor: '#4B8266', marginTop: 10, marginBottom: 10 }}>
-
-                </View>
+                {means != 0 &&
+                  <LINE
+                    min={Math.round(item.air_temperature_min)}
+                    max={Math.round(item.air_temperature_max)}
+                    hay={(Math.round(item.air_temperature_max) - Math.round(item.air_temperature_min)) * means}
+                    means={means}
+                    meanest={Math.min(...minest)}
+                  />}
 
                 <View style={{ width: size - 10, height: 0.5, backgroundColor: 'gray' }} />
                 <Image
@@ -114,7 +148,7 @@ export default class weather extends Component {
                 <Text style={{ fontWeight: 'bold', fontSize: 14, color: '#4B8266' }}>{Math.round(item.probability_rain)}%</Text>
 
               </View>
-              <View style={{ width: 0.5, height: 320, backgroundColor: 'gray' }} />
+              <View style={{ width: 0.5, height: (400), backgroundColor: 'gray' }} />
             </View>
           )}
           numColumns={numColumns}

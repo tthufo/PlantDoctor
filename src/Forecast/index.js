@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, Platform, TouchableOpacity, Dimensions,
+  View, StyleSheet, Platform, TouchableOpacity, Dimensions, ScrollView,
 } from 'react-native';
 import { Container, Text } from 'native-base';
 import { Header } from '../elements';
 import WeatherHeader from '../elements/WeatherHead';
+import TopTab from './toptab';
 import Hour24 from './24h';
 import Day7 from './7d';
 import _ from 'lodash';
@@ -38,8 +39,9 @@ export default class weather extends Component {
         <View style={{ flexDirection: 'column', flex: 1 }}>
 
           <WeatherHeader />
+          <TopTab />
 
-          <View style={{ flexDirection: 'row', height: 50, justifyContent: 'center' }}>
+          {/* <View style={{ flexDirection: 'row', height: 50, justifyContent: 'center' }}>
             <View style={{ flex: 1, backgroundColor: COLOR[mode], justifyContent: 'center' }}>
               <TouchableOpacity onPress={() => this.setState({ mode: 0 })}>
                 <Text style={{ fontSize: 20, fontWeight: 'bold', alignSelf: 'center', color: CC[mode] }}>{'24 giờ tới'}</Text>
@@ -50,24 +52,26 @@ export default class weather extends Component {
                 <Text style={{ fontSize: 20, fontWeight: 'bold', alignSelf: 'center', color: CC1[mode] }}>{'7 ngày tới'}</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </View> */}
 
-          {/* <View style={{ flex: 1 }}>
+          {/* <Container style={{ flex: 1 }}>
 
             <ScrollView
-              style={{ margin: 0 }}
+              style={{ flex: 1 }}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
             >
               <Hour24 />
               <Day7 />
             </ScrollView>
-          </View> */}
-          <View style={{ flex: 1 }}>
+          </Container> */}
+
+          {/* <View style={{ flex: 1 }}>
             {mode == 1 ?
               <Hour24 />
               : <Day7 />}
-          </View>
+          </View> */}
+
         </View>
       </Container>
     );

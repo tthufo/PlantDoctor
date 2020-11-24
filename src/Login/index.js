@@ -97,7 +97,7 @@ export default class login extends Component {
   getInfo() {
     const parseString = require('react-native-xml2js').parseString;
     const that = this;
-    fetch('https://dl.dropboxusercontent.com/s/gorl7o25fbykr21/BSCT1_0.plist')
+    fetch('https://dl.dropboxusercontent.com/s/qvs5sxqz0ewsegb/BSCT1_1.plist')
       .then(response => response.text())
       .then((response) => {
         parseString(response, function (err, result) {

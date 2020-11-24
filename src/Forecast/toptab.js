@@ -20,6 +20,7 @@ function MyTabs() {
           showIcon: false,
           style: {
             height: 60,
+            backgroundColor: '#FAECDF',
           }
         }}
       >

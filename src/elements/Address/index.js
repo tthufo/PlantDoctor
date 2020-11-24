@@ -23,7 +23,7 @@ export default class address extends Component {
 
   componentDidMount() {
     setTimeout(() => {
-      // Geocoder.init("AIzaSyDmYVdp5aQHEdqJtb-iDmm939_csRFa2FY");
+      // Geocoder.init("AIzaSyDfHjljokLZNbln-RIAMLaB4BgEube0OzE");
       // GetLocation.getCurrentPosition({
       //   enableHighAccuracy: true,
       //   timeout: 15000,
@@ -34,7 +34,7 @@ export default class address extends Component {
       //   .catch(error => {
       //     const { code, message } = error;
       //     console.warn(code, message);
-      //   }, 1000)
+      //   }, 1500)
     })
   }
 
@@ -50,7 +50,7 @@ export default class address extends Component {
   render() {
     return (
       <View>
-        <Text style={this.props.style}>Location</Text>
+        <Text style={this.props.style}>{''}</Text>
       </View >
     );
   }

@@ -306,7 +306,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = GAJPP6PZBM;
+						DevelopmentTeam = 7546H2CFFT;
 						LastSwiftMigration = 1120;
 						ProvisioningStyle = Manual;
 					};
@@ -734,10 +734,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "Apple Development: Thanh Hai Tran (ZWKS8AV396)";
+				CODE_SIGN_IDENTITY = "Apple Distribution: AGRIMEDIA WEATHER AND AGRICULTURE SOLUTION JOINT STOCK COMPANY (7546H2CFFT)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = GAJPP6PZBM;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = 7546H2CFFT;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = PlanDoctor/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -748,7 +748,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = vn.weatherplus.bsct;
 				PRODUCT_NAME = PlanDoctor;
-				PROVISIONING_PROFILE_SPECIFIER = plant_doc_dev;
+				PROVISIONING_PROFILE_SPECIFIER = bsct_production;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -761,10 +761,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "Apple Development: Thanh Hai Tran (ZWKS8AV396)";
+				CODE_SIGN_IDENTITY = "Apple Distribution: AGRIMEDIA WEATHER AND AGRICULTURE SOLUTION JOINT STOCK COMPANY (7546H2CFFT)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = GAJPP6PZBM;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = 7546H2CFFT;
 				INFOPLIST_FILE = PlanDoctor/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -774,7 +774,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = vn.weatherplus.bsct;
 				PRODUCT_NAME = PlanDoctor;
-				PROVISIONING_PROFILE_SPECIFIER = plant_doc_dev;
+				PROVISIONING_PROFILE_SPECIFIER = bsct_production;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

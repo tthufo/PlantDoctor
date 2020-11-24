@@ -21,7 +21,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -30,7 +30,7 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Bác sỹ cây trồng cần truy cập Máy ảnh của bạn cho việc cập nhật thông tin người dùng.</string>
+	<string>Bác sỹ cây trồng cần truy cập Máy ảnh của bạn cho việc cập nhật thông tin câu hỏi.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Bác sỹ cây trồng cần truy cập vị trí của bạn cho việc định vị vùng thời tiết nhanh chóng nhất</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -40,9 +40,9 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Bác sỹ cây trồng cần sử dụng Micro của bạn cho việc thu âm.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Bác sỹ cây trồng cần truy cập Bộ sưu tập ảnh của bạn cho việc cập nhật thông tin người dùng.</string>
+	<string>Bác sỹ cây trồng cần truy cập Bộ sưu tập ảnh của bạn cho việc cập nhật thông tin câu hỏi.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Bác sỹ cây trồng cần truy cập Bộ sưu tập ảnh của bạn cho việc cập nhật thông tin người dùng.</string>
+	<string>Bác sỹ cây trồng cần truy cập Bộ sưu tập ảnh của bạn cho việc cập nhật thông tin câu hỏi.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>pingfang.ttf</string>
@@ -78,8 +78,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>

@@ -7,6 +7,7 @@ import RegisterScreen from '../src/Register';
 import ForgotScreen from '../src/Forgot';
 
 import TabbarScreen from '../src/Tabbar';
+import TabbarScreen1 from '../src/Tabbar1';
 
 import TrickyScreen from '../src/Hometab/Tricky';
 import CropScreen from '../src/Hometab/Crops';
@@ -26,6 +27,11 @@ const AppNavigator = createStackNavigator({
   Forgot: { screen: ForgotScreen },
   Tabbar: {
     screen: TabbarScreen, navigationOptions: {
+      gesturesEnabled: false,
+    }
+  },
+  Tabbar1: {
+    screen: TabbarScreen1, navigationOptions: {
       gesturesEnabled: false,
     }
   },

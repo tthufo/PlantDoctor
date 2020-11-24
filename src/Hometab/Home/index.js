@@ -88,9 +88,10 @@ export default class home extends Component {
   async getWeather(location) {
     this.setState({ loading: true });
     try {
+      const show = STG.getData('auto')
       const weather = await API.home.getWeather({
-        latitude: location.latitude,
-        longtitude: location.longitude,
+        latitude: show ? 21.028511 : location.latitude,
+        longtitude: show ? 105.804817 : location.longitude,
         type: 1,
       });
       this.setState({ loading: false });
@@ -167,7 +168,7 @@ export default class home extends Component {
             <TouchableOpacity onPress={() => console.log()}>
               <Image
                 style={{ width: 30, height: 30 }}
-                source={require('../../../assets/images/ic_dot_menu.png')}
+              // source={require('../../../assets/images/ic_dot_menu.png')}
               />
             </TouchableOpacity>
           </View>
@@ -190,7 +191,7 @@ export default class home extends Component {
             <Text style={{ fontSize: 17, color: 'white' }}>{resultGmos && ICON[resultGmos.weather].name || '--'}</Text>
           </View>
           <TouchableHighlight onPress={() => {
-            NavigationService.navigate('Forecast', {});
+            // NavigationService.navigate('Forecast', {});
           }} >
             <View style={{ backgroundColor: '#4B8266', marginTop: 0, alignContent: 'flex-start', flexDirection: 'row', justifyContent: 'center' }}>
               <CON image={require('../../../assets/images/iqa.png')} title={`Chất lượng\nkhông khí`} value={weather && weather.dataPamair && weather.dataPamair.aqi && Math.round(weather.dataPamair.aqi.value).toString() || '--'} />

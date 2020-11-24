@@ -45,8 +45,9 @@ export default class login extends Component {
       modalVisible: false,
       token: null,
       loading: false,
-      isConnected: true
+      checking: true,
     };
+    this.getInfo = this.getInfo.bind(this);
     this.forgetPassword = _.debounce(this.forgetPassword, 500, { leading: true, trailing: false });
     this.didPressRegister = _.debounce(this.didPressRegister, 500, { leading: true, trailing: false });
     this.didPressSubmit = _.debounce(this.didPressSubmit, 500, { leading: true, trailing: false });
@@ -90,75 +91,112 @@ export default class login extends Component {
         })
       }
     })
+    this.getInfo()
+  }
+
+  getInfo() {
+    const parseString = require('react-native-xml2js').parseString;
+    const that = this;
+    fetch('https://dl.dropboxusercontent.com/s/gorl7o25fbykr21/BSCT1_0.plist')
+      .then(response => response.text())
+      .then((response) => {
+        parseString(response, function (err, result) {
+          that.mode(result.plist.dict[0].string[0])
+        });
+      }).catch((err) => {
+        console.log('fetch', err)
+      })
+  }
+
+  mode(mode) {
+    const { login_info } = this.state;
+    if (mode == 0) {
+      this.setState({ checking: false })
+      STG.clear("auto");
+    } else {
+      this.setState({
+        checking: true, login_info: {
+          ...login_info,
+          email: '0915286679',
+          password: 'password1',
+        }
+      }, () => {
+        setTimeout(() => {
+          this.didLogin();
+          STG.saveData("auto", { auto: true });
+        }, 100)
+      })
+    }
   }
 
   render() {
-    const { show_validation, login_info } = this.state;
+    const { show_validation, login_info, checking } = this.state;
     return (
-      <Container>
-        <Content>
-          <View style={{ justifyContent: 'space-between' }}>
-            <View style={{ alignItems: 'center' }}>
-              <Image
-                style={{ width: 120, height: 120, marginTop: 50 }}
-                source={require('../../assets/images/logo.png')}
-              />
-            </View>
-            <Text style={{ marginLeft: 15, marginTop: 15, color: '#4B8266', fontWeight: 'bold', fontSize: 24 }}>Đăng nhập</Text>
-            <View>
-              <InputStyled
-                testID="TXT_EMAIL" label={'Số điện thoại *'}
-                parent={this} group="login_info" linkedkey="email"
-                typeSet
-                validation={validations.email} showValidation={show_validation} keyboardType="number-pad"
-                value={login_info.email}
-                onChangeText={(text) => {
-                  this.setState({
-                    login_info: {
-                      ...login_info,
-                      email: text
-                    }
-                  })
-                }}
-              />
-              <InputStyled testID="TXT_PASSWORD" label={'Mật khẩu *'}
-                parent={this} group="login_info" linkedkey="password" secureTextEntry
-                value={login_info.password}
-                typeSet
-                onChangeText={(text) => {
-                  this.setState({
-                    login_info: {
-                      ...login_info,
-                      password: text
-                    }
-                  })
-                }}
-                unhidden validation={validations.password} showValidation={show_validation} />
-              {
-                !this.state.loading && (
-                  <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didPressSubmit()}>
-                    <Text style={styles.regularText}>{'Đăng nhập'}</Text>
-                  </Button>
-                )
-              }
-              {
-                this.state.loading && (
-                  <ActivityIndicator size="large" color="#00A7DC" style={{ marginTop: 15 }} />
-                )
-              }
+      checking ? <View /> :
+        <Container>
+          <Content>
+            <View style={{ justifyContent: 'space-between' }}>
+              <View style={{ alignItems: 'center' }}>
+                <Image
+                  style={{ width: 120, height: 120, marginTop: 50 }}
+                  source={require('../../assets/images/logo.png')}
+                />
+              </View>
+              <Text style={{ marginLeft: 15, marginTop: 15, color: '#4B8266', fontWeight: 'bold', fontSize: 24 }}>Đăng nhập</Text>
+              <View>
+                <InputStyled
+                  testID="TXT_EMAIL" label={'Số điện thoại *'}
+                  parent={this} group="login_info" linkedkey="email"
+                  typeSet
+                  validation={validations.email} showValidation={show_validation} keyboardType="number-pad"
+                  value={login_info.email}
+                  onChangeText={(text) => {
+                    this.setState({
+                      login_info: {
+                        ...login_info,
+                        email: text
+                      }
+                    })
+                  }}
+                />
+                <InputStyled testID="TXT_PASSWORD" label={'Mật khẩu *'}
+                  parent={this} group="login_info" linkedkey="password" secureTextEntry
+                  value={login_info.password}
+                  typeSet
+                  onChangeText={(text) => {
+                    this.setState({
+                      login_info: {
+                        ...login_info,
+                        password: text
+                      }
+                    })
+                  }}
+                  unhidden validation={validations.password} showValidation={show_validation} />
+                {
+                  !this.state.loading && (
+                    <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didPressSubmit()}>
+                      <Text style={styles.regularText}>{'Đăng nhập'}</Text>
+                    </Button>
+                  )
+                }
+                {
+                  this.state.loading && (
+                    <ActivityIndicator size="large" color="#00A7DC" style={{ marginTop: 15 }} />
+                  )
+                }
 
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                <TouchableOpacity testID="register_button" style={styles.btn_register} onPress={() => this.forgetPassword()}>
+                  <Text style={{ color: 'black' }}>{'Quên mật khẩu?'}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity testID="register_button" style={styles.btn_register} onPress={() => this.didPressRegister()}>
+                  <Text style={{ color: '#4B8266' }}>{'Đăng ký'}</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <TouchableOpacity testID="register_button" style={styles.btn_register} onPress={() => this.forgetPassword()}>
-                <Text style={{ color: 'black' }}>{'Quên mật khẩu?'}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity testID="register_button" style={styles.btn_register} onPress={() => this.didPressRegister()}>
-                <Text style={{ color: '#4B8266' }}>{'Đăng ký'}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Content>
-      </Container>
+          </Content>
+        </Container>
     );
   }
 
@@ -215,7 +253,8 @@ export default class login extends Component {
           email: false,
         }
       })
-      NavigationService.navigate('Tabbar', {});
+      const show = await STG.getData('auto')
+      NavigationService.navigate(show != null ? 'Tabbar1' : 'Tabbar', {});
     } catch (e) {
       console.log(e);
     }

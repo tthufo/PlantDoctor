@@ -24,9 +24,17 @@ const clearData = async () => {
   }
 }
 
+const clear = async (name) => {
+  try {
+    await AsyncStorage.removeItem(name)
+  } catch (e) {
+  }
+}
+
 export default STG = {
   saveData,
   getData,
   clearData,
+  clear,
 }
 

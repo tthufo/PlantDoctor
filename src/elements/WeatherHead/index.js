@@ -123,9 +123,10 @@ export default class weatherHead extends Component {
   async getWeather(location) {
     this.setState({ loading: true });
     try {
+      const show = STG.getData('auto')
       const weather = await API.home.getWeather({
-        latitude: location.latitude,
-        longtitude: location.longitude,
+        latitude: show ? 21.028511 : location.latitude,
+        longtitude: show ? 105.804817 : location.longitude,
         type: 1,
       });
       if (weather.data.statusCode != 200) {

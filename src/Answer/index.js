@@ -303,9 +303,7 @@ export default class social extends Component {
   }
 
   onScrollEnd(e, length) {
-    let pageNumber = Math.min(Math.max(Math.floor(e.nativeEvent.contentOffset.x / widthSize + 0.5) + 1, 0), length);
-    console.log(pageNumber);
-    this.setState({ page: Math.floor(pageNumber / length) })
+    this.setState({ page: e.nativeEvent.contentOffset.x / ((length - 1) * widthSize) })
   }
 
   render() {
@@ -332,65 +330,68 @@ export default class social extends Component {
                 // }}>
                 <View
                   style={{ flex: 1 }}>
-                  {index == 0 &&
-                    // item.questionStatus == 1 ? 
+                  {index == 0 ? item.questionStatus &&
+                    item.questionStatus == 1 ?
                     <Image
                       style={styles.item}
                       source={item.questionStatus == 1 ? require('../../assets/images/bg_checking.png') : { uri: item.urlImage && item.urlImage.length != 0 ? "".arr(item.urlImage)[0] : '' }}
                     />
-                    // :
-                    // <View>
-                    //   <FlatList
-                    //     style={styles.item}
-                    //     showsHorizontalScrollIndicator={false}
-                    //     showsVerticalScrollIndicator={false}
-                    //     horizontal
-                    //     pagingEnabled
-                    //     onMomentumScrollEnd={(e) => this.onScrollEnd(e, "".arr(item.urlImage).length)}
-                    //     data={"".arr(item.urlImage)}
-                    //     renderItem={({ item }) => (
-                    //       <Image
-                    //         style={styles.item}
-                    //         source={{ uri: item }}
-                    //       />
-                    //     )}
-                    //     numColumns={1}
-                    //     keyExtractor={(item, index) => index}
-                    //   />
-                    //   <PageControlAji style={{ alignItems: 'center', position: 'absolute', top: imageSize - 30, width: widthSize }} progress={page} numberOfPages={"".arr(item.urlImage).length} />
-                    // </View>
+                    :
+                    <View>
+                      <FlatList
+                        style={styles.item}
+                        showsHorizontalScrollIndicator={false}
+                        showsVerticalScrollIndicator={false}
+                        horizontal
+                        pagingEnabled
+                        onScroll={(e) => this.onScrollEnd(e, "".arr(item.urlImage).length)}
+                        data={"".arr(item.urlImage)}
+                        renderItem={({ item }) => (
+                          <Image
+                            style={styles.item}
+                            source={{ uri: item }}
+                          />
+                        )}
+                        numColumns={1}
+                        keyExtractor={(item, index) => index}
+                      />
+                      <PageControlAji style={{ alignItems: 'center', position: 'absolute', top: imageSize - 30, width: widthSize }} progress={page} numberOfPages={"".arr(item.urlImage).length} />
+                    </View> : null
                   }
+                  {/* {index != 0 && */}
+                  <View>
+                    <View style={{ flexDirection: 'row', paddingLeft: 10, paddingRight: 10, paddingTop: 10 }}>
+                      <Image
+                        style={{ width: 40, height: 40 }}
+                        source={{ uri: item.avatar }}
+                      />
+                      <View style={{ marginLeft: 10 }}>
+                        <Text style={{ fontWeight: 'bold', color: '#4B8266', fontSize: 15 }}>{item.fullName}</Text>
+                        <Text style={{ fontSize: 12, color: 'gray' }}>{item.createTime}</Text>
+                      </View>
+                    </View>
 
-                  <View style={{ flexDirection: 'row', paddingLeft: 10, paddingRight: 10, paddingTop: 10 }}>
-                    <Image
-                      style={{ width: 40, height: 40 }}
-                      source={{ uri: item.avatar }}
-                    />
-                    <View style={{ marginLeft: 10 }}>
-                      <Text style={{ fontWeight: 'bold', color: '#4B8266', fontSize: 15 }}>{item.fullName}</Text>
-                      <Text style={{ fontSize: 12, color: 'gray' }}>{item.createTime}</Text>
+                    <View style={{ flexDirection: 'row', paddingLeft: 10, paddingRight: 10 }}>
+                      <Image
+                        style={{ width: 40, height: 40 }}
+                        source={{ uri: '' }}
+                      />
+                      <View style={{ marginLeft: 10, marginRight: 10 }}>
+                        {index == 0 ? [{ title: 'Nhóm cây: ', value: item && item.cropsName }, { title: 'Câu hỏi: ', value: item && item.question }, { title: 'Bệnh lý: ', value: item && item.pathological }].map(e => {
+                          return (
+                            <View style={{ flexDirection: 'row', marginBottom: 3, marginRight: 10, flexWrap: 'wrap' }}>
+                              <Text style={{ fontWeight: 'bold', fontSize: 15, flexWrap: 'wrap' }}>{e.title}</Text>
+                              <Text style={{ fontSize: 15, flexWrap: 'wrap', marginRight: 10, }}>{e.value}</Text>
+                            </View>
+                          );
+                        }) : <View style={{ flexDirection: 'row', marginBottom: 3, marginRight: 10, flexWrap: 'wrap' }}>
+                            <Text style={{ fontWeight: 'bold', fontSize: 15, flexWrap: 'wrap' }}>{'Trả lời: '}</Text>
+                            <Text style={{ fontSize: 15, flexWrap: 'wrap', marginRight: 10, }}>{item.answer}</Text>
+                          </View>}
+                      </View>
                     </View>
                   </View>
-
-                  <View style={{ flexDirection: 'row', paddingLeft: 10, paddingRight: 10 }}>
-                    <Image
-                      style={{ width: 40, height: 40 }}
-                      source={{ uri: '' }}
-                    />
-                    <View style={{ marginLeft: 10, marginRight: 10 }}>
-                      {index == 0 ? [{ title: 'Nhóm cây: ', value: item && item.cropsName }, { title: 'Câu hỏi: ', value: item && item.question }, { title: 'Bệnh lý: ', value: item && item.pathological }].map(e => {
-                        return (
-                          <View style={{ flexDirection: 'row', marginBottom: 3, marginRight: 10, flexWrap: 'wrap' }}>
-                            <Text style={{ fontWeight: 'bold', fontSize: 15, flexWrap: 'wrap' }}>{e.title}</Text>
-                            <Text style={{ fontSize: 15, flexWrap: 'wrap', marginRight: 10, }}>{e.value}</Text>
-                          </View>
-                        );
-                      }) : <View style={{ flexDirection: 'row', marginBottom: 3, marginRight: 10, flexWrap: 'wrap' }}>
-                          <Text style={{ fontWeight: 'bold', fontSize: 15, flexWrap: 'wrap' }}>{'Trả lời: '}</Text>
-                          <Text style={{ fontSize: 15, flexWrap: 'wrap', marginRight: 10, }}>{item.answer}</Text>
-                        </View>}
-                    </View>
-                  </View>
+                  {/* } */}
                   {index == 0 && <Text style={{ textAlign: 'right', fontSize: 15, color: '#4B8266', margin: 5 }}>{item.totalAnswer == 0 ? 'Chưa có câu trả lời' : (item.totalAnswer + ' trả lời')}</Text>}
                   {index != 0 && item.urlImage &&
                     <Image

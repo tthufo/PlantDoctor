@@ -21,7 +21,7 @@ const LINE = ({ max, min, hay, means, meanest }) => {
     <View style={{ height: 390 - plays }}>
       <View style={{ alignItems: 'center', position: 'absolute', left: -((size - 20) / 2) + 3, top: ((340 - plays) - hay) - ((min - meanest) * means) }}>
         <Text style={{ color: '#4B8266', fontSize: 18, fontWeight: 'bold' }}>{max}°</Text>
-        <View style={{ borderRadius: 10, height: hay, width: 20, backgroundColor: 'green' }}>
+        <View style={{ borderRadius: 10, height: hay, width: 20, backgroundColor: '#4B8266' }}>
         </View>
         <Text style={{ color: '#4B8266', fontSize: 18, fontWeight: 'bold' }}>{min}°</Text>
       </View>

@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, TouchableOpacity, Image, FlatList, Dimensions, NativeModules, PermissionsAndroid, Alert,
+  View, StyleSheet, TouchableOpacity, Image, FlatList, Dimensions, NativeModules, ActivityIndicator, PermissionsAndroid, Alert,
   RefreshControl, TextInput, KeyboardAvoidingView, Keyboard, SafeAreaView,
 } from 'react-native';
 import { Text } from 'native-base';
 import { Header } from '../elements';
 import ImagePicker from 'react-native-image-picker';
+import {
+  PageControlAji,
+} from 'react-native-chi-page-control';
 import Toast from 'react-native-simple-toast';
 import axios from 'axios';
 import STG from '../../service/storage';
@@ -24,34 +27,20 @@ export default class social extends Component {
     super(props);
     this.state = {
       loading: false,
-      approve: false,
-      deny: false,
       question: [],
       offset: 0,
       full: false,
       isRefreshing: false,
       userInfo: {},
-      search: '',
       condition: { filter: [], status: [] },
       isShowKeyboard: false,
       image: {},
       text: '',
       quest: this.getParam().question,
+      page: 0,
     };
     this._keyboardDidShow = this._keyboardDidShow.bind(this);
     this._keyboardDidHide = this._keyboardDidHide.bind(this);
-  }
-
-  getStatus() {
-    const { approve, deny } = this.state;
-    if (approve && deny) {
-      return [2, 1]
-    } else if (approve && !deny) {
-      return [2]
-    } else if (!approve && deny) {
-      return [1]
-    }
-    return []
   }
 
   componentDidMount() {
@@ -313,9 +302,15 @@ export default class social extends Component {
     }
   }
 
+  onScrollEnd(e, length) {
+    let pageNumber = Math.min(Math.max(Math.floor(e.nativeEvent.contentOffset.x / widthSize + 0.5) + 1, 0), length);
+    console.log(pageNumber);
+    this.setState({ page: Math.floor(pageNumber / length) })
+  }
+
   render() {
     const { navigation } = this.props;
-    const { userInfo, question, isRefreshing, isShowKeyboard, image, text } = this.state;
+    const { userInfo, question, isRefreshing, isShowKeyboard, image, text, page, loading } = this.state;
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#4B8266' }}>
         <Header navigation={navigation} title={'Câu hỏi'} />
@@ -332,55 +327,79 @@ export default class social extends Component {
               showsVerticalScrollIndicator={false}
               data={question}
               renderItem={({ item, index }) => (
-                <TouchableOpacity onPress={() => {
-                  // NavigationService.navigate('Answer', {});
-                }}>
-                  <View
-                    style={{ flex: 1 }}>
-                    {index == 0 &&
-                      <Image
-                        style={styles.item}
-                        source={item.questionStatus == 1 ? require('../../assets/images/bg_checking.png') : { uri: item.urlImage && item.urlImage.length != 0 ? "".arr(item.urlImage)[0] : '' }}
-                      />}
-                    <View style={{ flexDirection: 'row', paddingLeft: 10, paddingRight: 10, paddingTop: 10 }}>
-                      <Image
-                        style={{ width: 40, height: 40 }}
-                        source={{ uri: item.avatar }}
-                      />
-                      <View style={{ marginLeft: 10 }}>
-                        <Text style={{ fontWeight: 'bold', color: '#4B8266', fontSize: 15 }}>{item.fullName}</Text>
-                        <Text style={{ fontSize: 12, color: 'gray' }}>{item.createTime}</Text>
-                      </View>
-                    </View>
+                // <TouchableOpacity onPress={() => {
+                // NavigationService.navigate('Answer', {});
+                // }}>
+                <View
+                  style={{ flex: 1 }}>
+                  {index == 0 &&
+                    // item.questionStatus == 1 ? 
+                    <Image
+                      style={styles.item}
+                      source={item.questionStatus == 1 ? require('../../assets/images/bg_checking.png') : { uri: item.urlImage && item.urlImage.length != 0 ? "".arr(item.urlImage)[0] : '' }}
+                    />
+                    // :
+                    // <View>
+                    //   <FlatList
+                    //     style={styles.item}
+                    //     showsHorizontalScrollIndicator={false}
+                    //     showsVerticalScrollIndicator={false}
+                    //     horizontal
+                    //     pagingEnabled
+                    //     onMomentumScrollEnd={(e) => this.onScrollEnd(e, "".arr(item.urlImage).length)}
+                    //     data={"".arr(item.urlImage)}
+                    //     renderItem={({ item }) => (
+                    //       <Image
+                    //         style={styles.item}
+                    //         source={{ uri: item }}
+                    //       />
+                    //     )}
+                    //     numColumns={1}
+                    //     keyExtractor={(item, index) => index}
+                    //   />
+                    //   <PageControlAji style={{ alignItems: 'center', position: 'absolute', top: imageSize - 30, width: widthSize }} progress={page} numberOfPages={"".arr(item.urlImage).length} />
+                    // </View>
+                  }
 
-                    <View style={{ flexDirection: 'row', paddingLeft: 10, paddingRight: 10 }}>
-                      <Image
-                        style={{ width: 40, height: 40 }}
-                        source={{ uri: '' }}
-                      />
-                      <View style={{ marginLeft: 10, marginRight: 10 }}>
-                        {index == 0 ? [{ title: 'Nhóm cây: ', value: item && item.cropsName }, { title: 'Câu hỏi: ', value: item && item.question }, { title: 'Bệnh lý: ', value: item && item.pathological }].map(e => {
-                          return (
-                            <View style={{ flexDirection: 'row', marginBottom: 3, marginRight: 10, flexWrap: 'wrap' }}>
-                              <Text style={{ fontWeight: 'bold', fontSize: 15, flexWrap: 'wrap' }}>{e.title}</Text>
-                              <Text style={{ fontSize: 15, flexWrap: 'wrap', marginRight: 10, }}>{e.value}</Text>
-                            </View>
-                          );
-                        }) : <View style={{ flexDirection: 'row', marginBottom: 3, marginRight: 10, flexWrap: 'wrap' }}>
-                            <Text style={{ fontWeight: 'bold', fontSize: 15, flexWrap: 'wrap' }}>{'Trả lời: '}</Text>
-                            <Text style={{ fontSize: 15, flexWrap: 'wrap', marginRight: 10, }}>{item.answer}</Text>
-                          </View>}
-                      </View>
+                  <View style={{ flexDirection: 'row', paddingLeft: 10, paddingRight: 10, paddingTop: 10 }}>
+                    <Image
+                      style={{ width: 40, height: 40 }}
+                      source={{ uri: item.avatar }}
+                    />
+                    <View style={{ marginLeft: 10 }}>
+                      <Text style={{ fontWeight: 'bold', color: '#4B8266', fontSize: 15 }}>{item.fullName}</Text>
+                      <Text style={{ fontSize: 12, color: 'gray' }}>{item.createTime}</Text>
                     </View>
-                    {index == 0 && <Text style={{ textAlign: 'right', fontSize: 15, color: '#4B8266', margin: 5 }}>{item.totalAnswer == 0 ? 'Chưa có câu trả lời' : (item.totalAnswer + ' trả lời')}</Text>}
-                    {index != 0 && item.urlImage &&
-                      <Image
-                        style={styles.item}
-                        source={item.answerStatus == 1 ? require('../../assets/images/bg_checking.png') : { uri: item.urlImage && item.urlImage.length != 0 ? "".arr(item.urlImage)[0] : '' }}
-                      />}
-                    <View style={{ flex: 1, height: 1, backgroundColor: 'gray' }} />
                   </View>
-                </TouchableOpacity>
+
+                  <View style={{ flexDirection: 'row', paddingLeft: 10, paddingRight: 10 }}>
+                    <Image
+                      style={{ width: 40, height: 40 }}
+                      source={{ uri: '' }}
+                    />
+                    <View style={{ marginLeft: 10, marginRight: 10 }}>
+                      {index == 0 ? [{ title: 'Nhóm cây: ', value: item && item.cropsName }, { title: 'Câu hỏi: ', value: item && item.question }, { title: 'Bệnh lý: ', value: item && item.pathological }].map(e => {
+                        return (
+                          <View style={{ flexDirection: 'row', marginBottom: 3, marginRight: 10, flexWrap: 'wrap' }}>
+                            <Text style={{ fontWeight: 'bold', fontSize: 15, flexWrap: 'wrap' }}>{e.title}</Text>
+                            <Text style={{ fontSize: 15, flexWrap: 'wrap', marginRight: 10, }}>{e.value}</Text>
+                          </View>
+                        );
+                      }) : <View style={{ flexDirection: 'row', marginBottom: 3, marginRight: 10, flexWrap: 'wrap' }}>
+                          <Text style={{ fontWeight: 'bold', fontSize: 15, flexWrap: 'wrap' }}>{'Trả lời: '}</Text>
+                          <Text style={{ fontSize: 15, flexWrap: 'wrap', marginRight: 10, }}>{item.answer}</Text>
+                        </View>}
+                    </View>
+                  </View>
+                  {index == 0 && <Text style={{ textAlign: 'right', fontSize: 15, color: '#4B8266', margin: 5 }}>{item.totalAnswer == 0 ? 'Chưa có câu trả lời' : (item.totalAnswer + ' trả lời')}</Text>}
+                  {index != 0 && item.urlImage &&
+                    <Image
+                      style={styles.item}
+                      source={item.answerStatus == 1 ? require('../../assets/images/bg_checking.png') : { uri: item.urlImage && item.urlImage.length != 0 ? "".arr(item.urlImage)[0] : '' }}
+                    />}
+                  <View style={{ flex: 1, height: 1, backgroundColor: 'gray' }} />
+                </View>
+                // </TouchableOpacity>
               )}
               numColumns={1}
               keyExtractor={(item, index) => index}
@@ -443,14 +462,17 @@ export default class social extends Component {
               </View>
             </View>
             <View>
-              <TouchableOpacity onPress={() => {
-                this.postQuestion()
-              }}>
-                <Image
-                  style={{ width: 35, height: 35 }}
-                  source={require('../../assets/images/ic_send.png')}
-                />
-              </TouchableOpacity>
+              {loading ?
+                <ActivityIndicator size="small" color="#4B8266" style={{ height: 30, width: 30 }} />
+                :
+                <TouchableOpacity onPress={() => {
+                  this.postQuestion()
+                }}>
+                  <Image
+                    style={{ width: 35, height: 35 }}
+                    source={require('../../assets/images/ic_send.png')}
+                  />
+                </TouchableOpacity>}
             </View>
           </View>
           {!isShowKeyboard && Object.keys(image).length != 0 &&

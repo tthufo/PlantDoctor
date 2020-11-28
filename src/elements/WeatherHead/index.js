@@ -99,11 +99,15 @@ export default class weatherHead extends Component {
     this.state = {
       weather: {},
       loading: true,
+      latLong: null,
     };
   }
 
   componentDidMount() {
-    this.getLocation();
+    const { delay } = this.props;
+    setTimeout(() => {
+      this.getLocation();
+    }, delay ? delay : 100)
   }
 
   getLocation() {
@@ -122,6 +126,7 @@ export default class weatherHead extends Component {
 
   async getWeather(location) {
     this.setState({ loading: true });
+    this.setState({ latLong: { lat: location.latitude, long: location.longitude } })
     try {
       const show = STG.getData('auto')
       const weather = await API.home.getWeather({
@@ -132,7 +137,6 @@ export default class weatherHead extends Component {
       if (weather.data.statusCode != 200) {
         return
       }
-      console.log('===>', weather);
       this.setState({ loading: false });
       this.setState({ weather: weather.data.data });
     } catch (e) {
@@ -156,7 +160,8 @@ export default class weatherHead extends Component {
   }
 
   render() {
-    const { weather, loading } = this.state;
+    const { weather, loading, latLong } = this.state;
+    const { delay } = this.props;
     var d = new Date();
     var h = d.getHours();
     const ICON = h <= 19 && h >= 7 ? IC.DAY : IC.NIGHT
@@ -169,7 +174,7 @@ export default class weatherHead extends Component {
               style={{ width: 30, height: 30 }}
               source={require('../../../assets/images/location.png')}
             />
-            <Address style={{ alignSelf: 'center', color: '#4B8266' }} />
+            {latLong != null && <Address latLong={latLong} delay={delay} style={{ fontSize: 15, alignSelf: 'center', color: '#4B8266' }} />}
           </View>
           <View>
             {loading ? <ActivityIndicator style={{ height: 60, width: 60 }} size="large" color="#4B8266" />
@@ -179,11 +184,11 @@ export default class weatherHead extends Component {
               }}>
                 <Image
                   style={{ width: 60, height: 60, marginTop: 5, marginBottom: 5 }}
-                  source={resultGmos && ICON[resultGmos.weather].icon || ''}
+                  source={resultGmos && ICON[Math.round(resultGmos.weather) - 1].icon || ''}
                 />
               </TouchableOpacity>}
           </View>
-          <Text style={{ color: '#4B8266', fontWeight: 'bold', flexWrap: 'wrap' }}>{resultGmos && ICON[resultGmos.weather].name}</Text>
+          <Text style={{ color: '#4B8266', fontWeight: 'bold', flexWrap: 'wrap' }}>{resultGmos && ICON[Math.round(resultGmos.weather) - 1].name}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
             <Text style={{ fontSize: 45, color: '#4B8266' }}>{resultGmos && Math.round(resultGmos.air_temperature) || ''}°</Text>
             <Text style={{ fontSize: 11, color: '#4B8266', alignSelf: 'flex-end', marginBottom: 10 }}>{resultGmos && Math.round(resultGmos.air_temperature_max) || ''}° | {resultGmos && Math.round(resultGmos.air_temperature_min) || ''}°</Text>

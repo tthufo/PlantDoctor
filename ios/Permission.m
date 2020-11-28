@@ -9,6 +9,8 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
+#import <CoreLocation/CLGeocoder.h>
+#import <CoreLocation/CLPlacemark.h>
 #import <UIKit/UIKit.h>
 #import "Permission.h"
 
@@ -82,6 +84,53 @@ RCT_EXPORT_METHOD(getPermissionCamera:(RCTResponseSenderBlock)callback){
 RCT_EXPORT_METHOD(goToSetting:(RCTResponseSenderBlock)callback){
   @try{
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString: UIApplicationOpenSettingsURLString]];
+  }
+  @catch(NSException *exception){
+    callback(@[exception.reason, [NSNull null]]);
+  }
+}
+
+RCT_EXPORT_METHOD(getAddress:(NSDictionary*)coor callBack:(RCTResponseSenderBlock)callback){
+  @try{
+    CLGeocoder *geocoder = [CLGeocoder new];
+
+    CLLocation *newLocation = [[CLLocation alloc]initWithLatitude:[coor[@"lat"] doubleValue]
+                                                        longitude:[coor[@"long"] doubleValue]];
+
+    [geocoder reverseGeocodeLocation:newLocation
+                   completionHandler:^(NSArray *placemarks, NSError *error) {
+
+                       if (error) {
+                           NSLog(@"Geocode failed with error: %@", error);
+                           return; // Request failed, log error
+                       }
+
+                       // Check if any placemarks were found
+                       if (placemarks && placemarks.count > 0)
+                       {
+                           CLPlacemark *placemark = placemarks[0];
+
+                           // Dictionary containing address information
+                           NSDictionary *addressDictionary =
+                           placemark.addressDictionary;
+
+                           // Extract address information
+                           callback(@[addressDictionary[@"Street"], @1]);
+                           
+//                           NSString *address = [addressDictionary
+//                                                objectForKey:(NSString *)kABPersonAddressStreetKey];
+//                           NSString *city = [addressDictionary
+//                                             objectForKey:(NSString *)kABPersonAddressCityKey];
+//                           NSString *state = [addressDictionary
+//                                              objectForKey:(NSString *)kABPersonAddressStateKey];
+//                           NSString *zip = [addressDictionary
+//                                            objectForKey:(NSString *)kABPersonAddressZIPKey];
+
+
+//                           NSLog(@"%@ %@ %@ %@", address,city, state, zip);
+                       }
+
+                   }];
   }
   @catch(NSException *exception){
     callback(@[exception.reason, [NSNull null]]);

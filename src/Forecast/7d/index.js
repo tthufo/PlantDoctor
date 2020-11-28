@@ -129,7 +129,7 @@ export default class weather extends Component {
                 <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{this.days(item.time)}</Text>
                 <Image
                   style={{ height: 30, width: 30, marginTop: 20 }}
-                  source={ICON[item.weather].icon || ''}
+                  source={ICON[Math.round(item.weather) - 1].icon || ''}
                 />
                 {means != 0 &&
                   <LINE
@@ -145,7 +145,7 @@ export default class weather extends Component {
                   style={{ height: 20, width: 20 }}
                   source={require('../../../assets/images/ic_humidity_one.png')}
                 />
-                <Text style={{ fontWeight: 'bold', fontSize: 14, color: '#4B8266' }}>{Math.round(item.probability_rain)}%</Text>
+                <Text style={{ fontWeight: 'bold', fontSize: 14, color: '#4B8266' }}>{Math.round(item.relative_humidity)}%</Text>
 
               </View>
               <View style={{ width: 0.5, height: (400), backgroundColor: 'gray' }} />

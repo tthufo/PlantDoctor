@@ -274,7 +274,7 @@ export default class question extends Component {
                 }}>
                   <View style={{
                     padding: 8, margin: 5,
-                    backgroundColor: 'gray', borderRadius: 6,
+                    backgroundColor: '#faecde', borderRadius: 6,
                     justifyContent: 'center', alignItems: 'center',
                     flexDirection: 'row',
                   }}>

@@ -27,21 +27,25 @@ export default class tricky extends Component {
       token: null,
       loading: false,
       isConnected: true,
-      crops: [
-        { name: 'Chọn cây giống', index: 0, image: require('../../../assets/images/sprout.png'), catId: 3 },
-        { name: 'Thổ nhưỡng', index: 1, image: require('../../../assets/images/italy.png'), catId: 4 },
-        { name: 'Gieo trồng', index: 2, image: require('../../../assets/images/page.png'), catId: 1 },
-        { name: 'Thời tiết', index: 3, image: require('../../../assets/images/weather_tips.png'), catId: 5 },
-        { name: 'Phân bón', index: 4, image: require('../../../assets/images/fertilizer.png'), catId: 2 },
-        { name: 'Tưới tiêu', index: 5, image: require('../../../assets/images/water.png'), catId: 6 },
-        { name: 'Dịch bệnh', index: 6, image: require('../../../assets/images/bug.png'), catId: 7 },
-        { name: 'Thu hoạch', index: 7, image: require('../../../assets/images/solid.png'), catId: 8 },
-      ],
+      crops: [],
     };
   }
 
-  componentDidMount() {
-
+  async componentDidMount() {
+    const show = await STG.getData('auto')
+    this.setState({
+      crops: show != undefined ? [{ name: 'Chọn cây giống', index: 0, image: require('../../../assets/images/sprout.png'), catId: 3 },
+      { name: 'Thổ nhưỡng', index: 1, image: require('../../../assets/images/italy.png'), catId: 4 },] : [
+          { name: 'Chọn cây giống', index: 0, image: require('../../../assets/images/sprout.png'), catId: 3 },
+          { name: 'Thổ nhưỡng', index: 1, image: require('../../../assets/images/italy.png'), catId: 4 },
+          { name: 'Gieo trồng', index: 2, image: require('../../../assets/images/page.png'), catId: 1 },
+          { name: 'Thời tiết', index: 3, image: require('../../../assets/images/weather_tips.png'), catId: 5 },
+          { name: 'Phân bón', index: 4, image: require('../../../assets/images/fertilizer.png'), catId: 2 },
+          { name: 'Tưới tiêu', index: 5, image: require('../../../assets/images/water.png'), catId: 6 },
+          { name: 'Dịch bệnh', index: 6, image: require('../../../assets/images/bug.png'), catId: 7 },
+          { name: 'Thu hoạch', index: 7, image: require('../../../assets/images/solid.png'), catId: 8 },
+        ]
+    })
   }
 
   render() {

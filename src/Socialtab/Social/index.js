@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, TouchableOpacity, Image, FlatList, Dimensions, RefreshControl, ScrollView,
+  View, StyleSheet, TouchableOpacity, Image, FlatList, Dimensions, RefreshControl, ScrollView, LayoutAnimation,
 } from 'react-native';
 import { Container, Button, Text } from 'native-base';
 import { Searchbar } from 'react-native-paper';
@@ -27,8 +27,10 @@ export default class social extends Component {
       isRefreshing: false,
       userInfo: {},
       search: '',
+      isActionButtonVisible: true,
       condition: { filter: [], status: [] },
     };
+    this._listViewOffset = 0
   }
 
   getStatus() {
@@ -122,8 +124,27 @@ export default class social extends Component {
     });
   }
 
+  onScrollEnd(event) {
+    const CustomLayoutLinear = {
+      duration: 100,
+      create: { type: LayoutAnimation.Types.linear, property: LayoutAnimation.Properties.opacity },
+      update: { type: LayoutAnimation.Types.linear, property: LayoutAnimation.Properties.opacity },
+      delete: { type: LayoutAnimation.Types.linear, property: LayoutAnimation.Properties.opacity }
+    }
+    const currentOffset = event.nativeEvent.contentOffset.y
+    const direction = (currentOffset > 0 && currentOffset > this._listViewOffset)
+      ? 'down'
+      : 'up'
+    const isActionButtonVisible = direction === 'up'
+    if (isActionButtonVisible !== this.state.isActionButtonVisible) {
+      LayoutAnimation.configureNext(CustomLayoutLinear)
+      this.setState({ isActionButtonVisible })
+    }
+    this._listViewOffset = currentOffset
+  }
+
   render() {
-    const { userInfo, question, approve, deny, isRefreshing, search, condition } = this.state;
+    const { question, isActionButtonVisible, isRefreshing, search, condition } = this.state;
     return (
       <Container style={{ backgroundColor: 'white' }}>
         <View style={{ flexDirection: 'column', flex: 1 }}>
@@ -158,7 +179,7 @@ export default class social extends Component {
               >
                 {condition.filter.map((item) => {
                   return (
-                    <View style={{ padding: 8, marginRight: 10, backgroundColor: '#F1D4B7', borderRadius: 6, justifyContent: 'center', alignItems: 'center' }}>
+                    <View style={{ padding: 8, marginRight: 10, backgroundColor: '#faecde', borderRadius: 6, justifyContent: 'center', alignItems: 'center' }}>
                       <Text style={{ fontSize: 16 }}>{item.cropsName}</Text>
                     </View>
                   )
@@ -171,6 +192,7 @@ export default class social extends Component {
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
             data={question}
+            onScroll={(e) => this.onScrollEnd(e)}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => {
                 NavigationService.navigate('Answer', { question: item, updateList: () => this.getQuestion(false) });
@@ -224,13 +246,13 @@ export default class social extends Component {
             onEndReachedThreshold={0.4}
             onEndReached={() => this.onLoadMore()}
           />
-
-          <Button testID="BTN_SIGN_IN" block primary style={[styles.btn_sign_in, styles.floating]} onPress={() => {
-            NavigationService.navigate('Question', { updateList: () => this.getQuestion(false) });
-          }}>
-            <Text style={styles.regularText}>{'Đặt câu hỏi'}</Text>
-          </Button>
-
+          {isActionButtonVisible &&
+            <Button testID="BTN_SIGN_IN" block primary style={[styles.btn_sign_in, styles.floating]} onPress={() => {
+              NavigationService.navigate('Question', { updateList: () => this.getQuestion(false) });
+            }}>
+              <Text style={styles.regularText}>{'Đặt câu hỏi'}</Text>
+            </Button>
+          }
         </View>
       </Container >
     );

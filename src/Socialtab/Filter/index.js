@@ -78,7 +78,7 @@ export default class filter extends Component {
         <Content>
           <View style={{ flexDirection: 'column', flex: 1 }}>
 
-            <View style={{ backgroundColor: '#F1D4B7' }}>
+            <View style={{ backgroundColor: '#fdf7f4' }}>
               <Text style={{ fontSize: 15, marginLeft: 10, marginTop: 10 }}>{'Lọc theo'}</Text>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Text style={{ fontSize: 15, margin: 10 }}>{'Cây trồng'}</Text>
@@ -102,7 +102,7 @@ export default class filter extends Component {
                     }}>
                       <View style={{
                         padding: 8, marginRight: 10, marginBottom: 10,
-                        backgroundColor: 'gray', borderRadius: 6,
+                        backgroundColor: '#faecde', borderRadius: 6,
                         justifyContent: 'center', alignItems: 'center',
                         flexDirection: 'row',
                       }}>

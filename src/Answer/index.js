@@ -359,7 +359,7 @@ export default class social extends Component {
                     </View> : null
                   }
                   {/* {index != 0 && */}
-                  <View>
+                  <View style={{ backgroundColor: index == 0 ? '#faecde' : 'white' }}>
                     <View style={{ flexDirection: 'row', paddingLeft: 10, paddingRight: 10, paddingTop: 10 }}>
                       <Image
                         style={{ width: 40, height: 40 }}
@@ -392,7 +392,7 @@ export default class social extends Component {
                     </View>
                   </View>
                   {/* } */}
-                  {index == 0 && <Text style={{ textAlign: 'right', fontSize: 15, color: '#4B8266', margin: 5 }}>{item.totalAnswer == 0 ? 'Chưa có câu trả lời' : (item.totalAnswer + ' trả lời')}</Text>}
+                  {index == 0 && <Text style={{ backgroundColor: '#faecde', textAlign: 'right', fontSize: 15, color: '#4B8266', padding: 5 }}>{item.totalAnswer == 0 ? 'Chưa có câu trả lời' : (item.totalAnswer + ' trả lời')}</Text>}
                   {index != 0 && item.urlImage &&
                     <Image
                       style={styles.item}
@@ -485,7 +485,7 @@ export default class social extends Component {
               <View style={{ position: 'absolute', top: 5, right: 5 }}>
                 <TouchableOpacity onPress={() => this.setState({ image: {} })}>
                   <Image
-                    style={{ width: 35, height: 35 }}
+                    style={{ width: 30, height: 30 }}
                     source={require('../../assets/images/close.png')}
                   />
                 </TouchableOpacity>

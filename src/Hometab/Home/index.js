@@ -12,8 +12,7 @@ import NavigationService from '../../../service/navigate';
 import Address from '../../elements/Address';
 import _ from 'lodash';
 import { TouchableHighlight } from 'react-native-gesture-handler';
-
-const os = Platform.OS;
+import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 
 const CON = ({ image, title, value }) => {
   return (
@@ -61,11 +60,29 @@ export default class home extends Component {
       selectedCrop: 0,
       weather: {},
       loading: true,
+      latLong: null,
     };
   }
 
+  _menu = null;
+
+  setMenuRef = ref => {
+    this._menu = ref;
+  };
+
+  hideMenu = () => {
+    this._menu.hide();
+  };
+
+  showMenu = () => {
+    this._menu.show();
+  };
+
+
   componentDidMount() {
-    this.getLocation();
+    setTimeout(() => {
+      this.getLocation();
+    }, 500)
     STG.getData('user').then(u => {
       this.getCrops(u.subscribe);
     })
@@ -87,6 +104,7 @@ export default class home extends Component {
 
   async getWeather(location) {
     this.setState({ loading: true });
+    this.setState({ latLong: { lat: location.latitude, long: location.longitude } })
     try {
       const show = STG.getData('auto')
       const weather = await API.home.getWeather({
@@ -107,6 +125,7 @@ export default class home extends Component {
 
   async getCrops(subscriber) {
     var bodyFormData = new FormData();
+    const show = await STG.getData('auto')
     const userInfo = await STG.getData('token')
     bodyFormData.append('subscriber', subscriber);
     axios({
@@ -122,7 +141,7 @@ export default class home extends Component {
         Toast.show('Lỗi xảy ra, mời bạn thử lại')
         return;
       }
-      const resign = r.data.data.filter(e => e.cropsUserId != null).map((e, index) => {
+      const resign = r.data.data.filter(e => show ? (e.cropsUserId != null && e.cropsId != 27 && e.cropsId != 28) : e.cropsUserId != null).map((e, index) => {
         e.check = index == 0 ? true : false;
         return e;
       });
@@ -153,24 +172,42 @@ export default class home extends Component {
   }
 
   render() {
-    const { crops, selectedCrop, weather, loading } = this.state;
+    const { crops, selectedCrop, weather, loading, latLong } = this.state;
     const resultGmos = weather.resultGmos && weather.resultGmos[0]
     var d = new Date();
     var h = d.getHours();
     const ICON = h <= 19 && h >= 7 ? IC.DAY : IC.NIGHT
+    let data = [{
+      value: 'Banana',
+    }, {
+      value: 'Mango',
+    }, {
+      value: 'Pear',
+    }];
     return (
       <Container style={{ backgroundColor: 'white' }}>
         <Header height={20} />
         <Content>
           <View style={{ backgroundColor: '#4B8266', flex: 1, alignItems: 'center', padding: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
             <View style={{ height: 40, width: 40 }} />
-            <Address style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }} />
-            <TouchableOpacity onPress={() => console.log()}>
-              <Image
-                style={{ width: 30, height: 30 }}
-              // source={require('../../../assets/images/ic_dot_menu.png')}
-              />
-            </TouchableOpacity>
+            {latLong != null && <Address latLong={latLong} full style={{ fontSize: 20, fontWeight: 'bold', color: 'white', textAlign: 'center' }} />}
+            <Menu
+              ref={this.setMenuRef}
+              button={
+                <TouchableOpacity onPress={() => {
+                  this.showMenu()
+                }}>
+                  <Image
+                    style={{ width: 30, height: 30 }}
+                    source={require('../../../assets/images/ic_dot_menu.png')}
+                  />
+                </TouchableOpacity>
+              }
+            >
+              <MenuItem onPress={this.hideMenu}>Hướng dẫn</MenuItem>
+              <MenuItem onPress={this.hideMenu}>Thông tin</MenuItem>
+              <MenuItem onPress={this.hideMenu}>Chi tiết</MenuItem>
+            </Menu>
           </View>
           <View style={{ backgroundColor: '#4B8266', flex: 1, padding: 10, flexDirection: 'row', justifyContent: 'center' }}>
             {loading ? <ActivityIndicator size="large" color="white" />
@@ -180,7 +217,7 @@ export default class home extends Component {
               }}>
                 <Image
                   style={{ width: 70, height: 70, marginRight: 5 }}
-                  source={resultGmos && ICON[resultGmos.weather].icon || ''}
+                  source={resultGmos && ICON[Math.round(resultGmos.weather) - 1].icon || ''}
                 />
               </TouchableOpacity>}
             <Text style={{ fontSize: 60, color: 'white' }}>{resultGmos && Math.round(resultGmos.air_temperature) || '--'}</Text>
@@ -188,7 +225,7 @@ export default class home extends Component {
           </View>
           <View style={{ backgroundColor: '#4B8266', flex: 1, padding: 10, alignItems: 'center', justifyContent: 'center' }}>
             <Text style={{ fontSize: 17, color: 'white' }}>{`Nhiệt độ cảm nhận ${resultGmos && Math.round(resultGmos.temperatureFeel).toString() || '--'}°C`} </Text>
-            <Text style={{ fontSize: 17, color: 'white' }}>{resultGmos && ICON[resultGmos.weather].name || '--'}</Text>
+            <Text style={{ fontSize: 17, color: 'white' }}>{resultGmos && ICON[Math.round(resultGmos.weather) - 1].name || '--'}</Text>
           </View>
           <TouchableHighlight onPress={() => {
             NavigationService.navigate('Forecast', {});

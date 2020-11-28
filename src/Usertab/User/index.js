@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, TouchableOpacity, Image, FlatList, Dimensions, RefreshControl,
+  View, StyleSheet, TouchableOpacity, Image, FlatList, Dimensions, RefreshControl, LayoutAnimation,
 } from 'react-native';
 import { Container, Button, Text } from 'native-base';
 import Toast from 'react-native-simple-toast';
@@ -8,6 +8,7 @@ import STG from '../../../service/storage';
 import API from '../../apis';
 import { Header } from '../../elements';
 import NavigationService from '../../../service/navigate';
+import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 import _ from 'lodash';
 
 const imageSize = (Dimensions.get('window').width * 9 / 16);
@@ -26,8 +27,24 @@ export default class user extends Component {
       full: false,
       isRefreshing: false,
       userInfo: {},
+      isActionButtonVisible: true,
     };
+    this._listViewOffset = 0
   }
+
+  _menu = null;
+
+  setMenuRef = ref => {
+    this._menu = ref;
+  };
+
+  hideMenu = () => {
+    this._menu.hide();
+  };
+
+  showMenu = () => {
+    this._menu.show();
+  };
 
   getStatus() {
     const { approve, deny } = this.state;
@@ -105,11 +122,48 @@ export default class user extends Component {
     })
   }
 
+  onScrollEnd(event) {
+    const CustomLayoutLinear = {
+      duration: 100,
+      create: { type: LayoutAnimation.Types.linear, property: LayoutAnimation.Properties.opacity },
+      update: { type: LayoutAnimation.Types.linear, property: LayoutAnimation.Properties.opacity },
+      delete: { type: LayoutAnimation.Types.linear, property: LayoutAnimation.Properties.opacity }
+    }
+    const currentOffset = event.nativeEvent.contentOffset.y
+    const direction = (currentOffset > 0 && currentOffset > this._listViewOffset)
+      ? 'down'
+      : 'up'
+    const isActionButtonVisible = direction === 'up'
+    if (isActionButtonVisible !== this.state.isActionButtonVisible) {
+      LayoutAnimation.configureNext(CustomLayoutLinear)
+      this.setState({ isActionButtonVisible })
+    }
+    this._listViewOffset = currentOffset
+  }
+
   render() {
-    const { userInfo, question, approve, deny, isRefreshing } = this.state;
+    const { userInfo, question, approve, deny, isRefreshing, isActionButtonVisible } = this.state;
     return (
       <Container style={{ backgroundColor: 'white' }}>
-        <Header title={'Tài khoản cá nhân'} />
+        <Header title={'Tài khoản cá nhân'} renderRight={() => (
+          <Menu
+            ref={this.setMenuRef}
+            button={
+              <TouchableOpacity onPress={() => {
+                this.showMenu()
+              }}>
+                <Image
+                  style={{ width: 30, height: 30 }}
+                  source={require('../../../assets/images/ic_dot_menu.png')}
+                />
+              </TouchableOpacity>
+            }
+          >
+            <MenuItem onPress={this.hideMenu}>Hướng dẫn</MenuItem>
+            <MenuItem onPress={this.hideMenu}>Thông tin</MenuItem>
+            <MenuItem onPress={this.hideMenu}>Chi tiết</MenuItem>
+          </Menu>)
+        } />
         <View style={{ flexDirection: 'column', flex: 1 }}>
 
           <View style={{ margin: 10, padding: 5, }}>
@@ -171,6 +225,7 @@ export default class user extends Component {
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
             data={question}
+            onScroll={(e) => this.onScrollEnd(e)}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => {
                 NavigationService.navigate('Answer', { question: item, updateList: () => this.getQuestion(false) });
@@ -224,12 +279,12 @@ export default class user extends Component {
             onEndReachedThreshold={0.4}
             onEndReached={() => this.onLoadMore()}
           />
-
-          <Button testID="BTN_SIGN_IN" block primary style={[styles.btn_sign, styles.floating]} onPress={() => {
-            NavigationService.navigate('Question', { updateList: () => this.getQuestion(false) });
-          }}>
-            <Text style={styles.regular}>{'Đặt câu hỏi'}</Text>
-          </Button>
+          {isActionButtonVisible &&
+            <Button testID="BTN_SIGN_IN" block primary style={[styles.btn_sign, styles.floating]} onPress={() => {
+              NavigationService.navigate('Question', { updateList: () => this.getQuestion(false) });
+            }}>
+              <Text style={styles.regular}>{'Đặt câu hỏi'}</Text>
+            </Button>}
 
         </View>
       </Container >

@@ -38,7 +38,7 @@ export default class weather extends Component {
 
         <View style={{ flexDirection: 'column', flex: 1 }}>
 
-          <WeatherHeader />
+          <WeatherHeader delay={1500} />
           <TopTab />
 
           {/* <View style={{ flexDirection: 'row', height: 50, justifyContent: 'center' }}>

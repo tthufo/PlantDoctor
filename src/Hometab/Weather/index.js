@@ -73,7 +73,7 @@ export default class weather extends Component {
         <Header navigation={navigation} title={'Thời tiết'} />
         <View style={{ flexDirection: 'column', flex: 1 }}>
 
-          <WeatherHead />
+          <WeatherHead delay={3200} />
 
           <View style={{ flexGrow: 1, alignItems: 'center', padding: 0 }}>
             <FlatList

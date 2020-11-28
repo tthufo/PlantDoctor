@@ -31,6 +31,7 @@ export default class crop extends Component {
       loading: false,
       isConnected: true,
       crops: [],
+      max: '',
     };
     this.didPressSubmit = _.debounce(this.didPressSubmit, 500, { leading: true, trailing: false });
   }
@@ -39,10 +40,14 @@ export default class crop extends Component {
     STG.getData('user').then(u => {
       this.getCrops(u.subscribe);
     })
+    STG.getData('auto').then(u => {
+      this.setState({ max: u ? 4 : 8 })
+    })
   }
 
   async getCrops(subscriber) {
     var bodyFormData = new FormData();
+    const show = await STG.getData('auto')
     const userInfo = await STG.getData('token')
     bodyFormData.append('subscriber', subscriber);
     axios({
@@ -58,7 +63,7 @@ export default class crop extends Component {
         Toast.show('Lỗi xảy ra, mời bạn thử lại')
         return;
       }
-      const resign = r.data.data.map(e => {
+      const resign = r.data.data.filter(e => show ? (e.cropsId != 27 && e.cropsId != 28) : e).map(e => {
         e.check = e.cropsUserId == null ? false : (this.getParam().single ? false : true);
         return e;
       });
@@ -89,7 +94,7 @@ export default class crop extends Component {
 
   render() {
     const { navigation } = this.props;
-    const { crops } = this.state;
+    const { crops, max } = this.state;
     return (
       <Container style={{ backgroundColor: 'white' }}>
         <Header navigation={navigation} title={'Hãy lựa chọn'} />
@@ -97,7 +102,7 @@ export default class crop extends Component {
           <View style={{ alignItems: 'center', padding: 5 }}>
             <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#4B8266' }}>Cây trồng</Text>
             {!this.getParam().filter && !this.getParam().single &&
-              <Text style={{ fontSize: 14 }}>{`Chọn tối đa 8 loại cây trồng (${this.limit().length}/8)`}</Text>}
+              <Text style={{ fontSize: 14 }}>{`Chọn tối đa ${max} loại cây trồng (${this.limit().length}/${max})`}</Text>}
           </View>
 
           <View style={{ flex: 8, alignItems: 'center', padding: 0 }}>

@@ -58,7 +58,18 @@ export default class index extends Component {
 
   renderRight() {
     if (this.props.renderRight) {
-      return this.props.renderRight();
+      return (
+        <Right style={{ flex: 0.3 }}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'flex-end'
+            }}
+          >
+            {this.props.renderRight()}
+          </View>
+        </Right>);
     } else if (this.props.rightText) {
       return (
         <Right style={{ flex: 0.3 }}>

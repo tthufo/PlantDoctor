@@ -17,7 +17,7 @@ const string = {
   required: (name) => {
     switch (name) {
       case `Email`:
-        return `正しいメールアドレスを入力してください。`;
+        return `Email không hợp lệ`;
 
       case `Phone`:
         return `Số điện thoại không chính xác`;
@@ -35,7 +35,7 @@ const string = {
         return `${name}を入力してください。`;
 
       case `Name`:
-        return `お名前を入力してください。`;
+        return `Tên tài khoản không hợp lệ`;
 
       case `Company Name`:
         return `Tên tài khoản trống`;
@@ -62,7 +62,7 @@ const string = {
   min: (length) => (name) => {
     switch (name) {
       case `Name`:
-        return `2文字以上の名前を入力してください。`;
+        return `Tên tài khoản không hợp lệ`;
       case `Company Name`:
         return `Tên tài khoản không hợp lệ`;
       case `Phone`:

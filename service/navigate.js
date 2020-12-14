@@ -15,6 +15,12 @@ function navigate(routeName, params) {
   );
 }
 
+function popTop(routeName, params) {
+  _navigator.dispatch(
+    NavigationActions.PopToTop()
+  );
+}
+
 function getCurrentRoute() {
   let route = _navigator.state.nav
   while (route.routes) {
@@ -28,5 +34,6 @@ function getCurrentRoute() {
 export default {
   navigate,
   setTopLevelNavigator,
-  getCurrentRoute
+  getCurrentRoute,
+  popTop,
 };

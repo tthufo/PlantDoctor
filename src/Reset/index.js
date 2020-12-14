@@ -14,10 +14,16 @@ const validations = {
     label: 'OTP',
     max: 10,
     required: true,
-  }
+  },
+  password: {
+    label: "Password",
+    required: true,
+    min: 4,
+    max: 16,
+  },
 };
 
-export default class confirm extends Component {
+export default class reset extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -35,17 +41,19 @@ export default class confirm extends Component {
       isConnected: true
     };
     this.didUpdateData = this.didUpdateData.bind(this);
+    this.password_confirmation = this.password_confirmation.bind(this);
     this.didPressSubmit = _.debounce(this.didPressSubmit, 2000, { leading: true, trailing: false });
   }
 
-  async didSubmitOTP() {
-    const { register_info: { phone } } = this.state;
+  async didSubmit() {
+    const { register_info: { phone, password } } = this.state;
     const { navigation: { state: { params: { phoneNumber } } } } = this.props;
     this.setState({ loading: true })
     try {
-      const result = await API.auth.confirm({
+      const result = await API.auth.reset({
         msisdn: phoneNumber,
         otp: phone,
+        password,
       })
       this.setState({ loading: false })
       if (result.data.statusCode != 200) {
@@ -53,29 +61,8 @@ export default class confirm extends Component {
         Toast.show(message)
         return
       }
-      Toast.show(result.data.data.message || '')
-      this.props.navigation.popToTop()
-    } catch (e) {
-      console.log(e);
-      this.setState({ loading: false })
-    }
-  }
-
-  async didGetOTP() {
-    const { navigation: { state: { params: { phoneNumber } } } } = this.props;
-    this.setState({ loading: true })
-    try {
-      const result = await API.auth.resend({
-        msisdn: phoneNumber,
-      })
-      this.setState({ loading: false })
-      if (result.data.statusCode != 200) {
-        const message = result.data && result.data.data && result.data.data.message || 'Lỗi xảy ra, mời bạn thử lại'
-        Toast.show(message)
-        return
-      }
-      const message = result.data && result.data.data && result.data.data.message || ''
-      Toast.show(message)
+      Toast.show(result.data && result.data.data && result.data.data.message || '')
+      this.props.navigation.popToTop();
     } catch (e) {
       console.log(e);
       this.setState({ loading: false })
@@ -88,7 +75,7 @@ export default class confirm extends Component {
     const { navigation: { state: { params: { phoneNumber } } } } = this.props;
     return (
       <Container>
-        <Header navigation={navigation} title={'Xác thực tài khoản'} />
+        <Header navigation={navigation} title={'Đặt lại mật khẩu'} />
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : null}
           style={{ flex: 1 }}
@@ -102,12 +89,12 @@ export default class confirm extends Component {
                 source={require('../../assets/images/logo.png')}
               />
             </View>
-            <Text style={{ marginLeft: 15, marginTop: 15, color: '#4B8266', fontWeight: 'bold', fontSize: 24 }}>{'Xác thực tài khoản'}</Text>
+            <Text style={{ marginLeft: 15, marginTop: 15, color: '#4B8266', fontWeight: 'bold', fontSize: 24 }}>{'Đặt lại mật khẩu'}</Text>
             <Text style={{ margin: 15, fontWeight: 'normal', fontSize: 15, textAlign: 'center' }}>
-              {`Để hoàn tất đăng ký, Quý khách vui lòng nhập mã đã gửi tới số ${phoneNumber} để xác thực`}
+              {`Để đặt lại mật khẩu, Quý khách vui lòng nhập mã đã gửi tới số ${phoneNumber} để xác thực`}
             </Text>
             <Input
-              testID="phone_textfield" /*label={'Mã OTP*'}*/ keyboardType='numeric' parent={this} group="register_info" linkedkey="phone" validation={validations.phone} showValidation={show_validation}
+              testID="phone_textfield" label={'Mã xác thực*'} keyboardType='numeric' parent={this} group="register_info" linkedkey="phone" validation={validations.phone} showValidation={show_validation}
               value={register_info.phone}
               typeSet
               textContentType="oneTimeCode"
@@ -120,24 +107,60 @@ export default class confirm extends Component {
                 })
               }}
             />
+            <Input
+              testID="password_textfield" label={'Mật khẩu *'} parent={this} group="register_info" linkedkey="password" secureTextEntry unhidden validation={validations.password} showValidation={show_validation}
+              value={register_info.password}
+              typeSet
+              textContentType="oneTimeCode"
+              onChangeText={(text) => {
+                this.setState({
+                  register_info: {
+                    ...register_info,
+                    password: text.length > 0 ? text : false
+                  }
+                })
+              }}
+            />
+            <Input
+              testID="confirm_password_textfield" label={'Nhập lại mật khẩu *'} parent={this} group="register_info" linkedkey="password_confirmation" secureTextEntry unhidden validation={() => this.password_confirmation()} showValidation={show_validation}
+              value={register_info.password_confirmation}
+              typeSet
+              textContentType="oneTimeCode"
+              onChangeText={(text) => {
+                this.setState({
+                  register_info: {
+                    ...register_info,
+                    password_confirmation: text.length > 0 ? text : false
+                  }
+                })
+              }}
+            />
             {loading ?
               <ActivityIndicator size="large" color="#00A7DC" style={{ marginTop: 15 }} />
               :
               <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didPressSubmit()}>
-                <Text style={styles.regularText}>{'Xác thực'}</Text>
+                <Text style={styles.regularText}>{'Đặt lại'}</Text>
               </Button>}
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+            {/* <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
               <TouchableOpacity testID="register_button" style={styles.btn_register} onPress={() => this.didGetOTP()}>
                 <Text style={{ color: 'black' }}>{'Bạn chưa nhận được mã ?'}</Text>
               </TouchableOpacity>
               <TouchableOpacity testID="register_button" style={styles.btn_register} onPress={() => this.didGetOTP()}>
                 <Text style={{ color: '#4B8266' }}>{'Lấy lại'}</Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
           </ScrollView>
         </KeyboardAvoidingView>
       </Container>
     );
+  }
+
+  password_confirmation() {
+    if (this.state.register_info.password === this.state.register_info.password_confirmation) {
+      return true;
+    } else {
+      return validation_string.default('Mật khẩu không trùng khớp');
+    }
   }
 
   keyboardUpdate(frames) {
@@ -150,10 +173,13 @@ export default class confirm extends Component {
     }
     this.setState({ ...this.state, show_validation: true });
     const validation_results = validate(this.state.register_info, validations);
+    if (this.state.register_info.password !== this.state.register_info.password_confirmation) {
+      validation_results.push('Mật khẩu không trùng khớp');
+    }
     if (validation_results.length > 0) {
       alert_validation(validation_results);
     } else {
-      this.didSubmitOTP()
+      this.didSubmit()
     }
   }
 

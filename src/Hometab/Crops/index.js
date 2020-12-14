@@ -56,7 +56,7 @@ export default class crop extends Component {
       data: bodyFormData,
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
-        'Authorization': 'bearer' + userInfo.access_token,
+        'Authorization': 'bearer ' + userInfo.access_token,
       }
     }).then(r => {
       if (r.status != 200) {

@@ -130,7 +130,7 @@ export default class social extends Component {
       data: bodyFormData,
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Authorization': 'bearer' + token.access_token,
+        'Authorization': 'bearer ' + token.access_token,
       }
     }).then(r => {
       this.setState({ loading: false })

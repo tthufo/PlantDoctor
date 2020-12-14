@@ -58,11 +58,12 @@ export default class register extends Component {
         password,
       })
       this.setState({ loading: false })
-      NavigationService.navigate('Confirm', { phoneNumber: validPhone(phone) });
       if (result.data.statusCode != 200) {
-        Toast.show('Lỗi xảy ra, mời bạn thử lại')
+        const message = result.data && result.data.data && result.data.data.message || 'Lỗi xảy ra, mời bạn thử lại'
+        Toast.show(message)
         return
       }
+      NavigationService.navigate('Confirm', { phoneNumber: validPhone(phone) });
     } catch (e) {
       console.log(e);
       this.setState({ loading: false })

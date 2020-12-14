@@ -117,7 +117,7 @@ export default class login extends Component {
         checking: true, login_info: {
           ...login_info,
           email: '0915286679',
-          password: 'password1',
+          password: '123456',
         }
       }, () => {
         setTimeout(() => {
@@ -217,7 +217,7 @@ export default class login extends Component {
     bodyFormData.append('scopes', 'read');
     axios({
       method: 'post',
-      url: HOST.BASE_URL + '/authapp/oauth/token',
+      url: HOST.BASE_URL + '/auth/oauth/token',
       data: bodyFormData,
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
@@ -226,7 +226,8 @@ export default class login extends Component {
     }).then(r => {
       this.setState({ loading: false })
       if (r.status != 200) {
-        Toast.show('Lỗi xảy ra, mời bạn thử lại')
+        const message = t.data && t.data.data && t.data.data.message || 'Lỗi xảy ra, mời bạn thử lại'
+        Toast.show(message)
         return;
       }
       STG.saveData("credential", { phone: email, pass: password });

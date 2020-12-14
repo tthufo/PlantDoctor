@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
-import { StyleSheet, Dimensions, Alert, KeyboardAvoidingView, TouchableOpacity, ScrollView, View, Image } from 'react-native';
+import { StyleSheet, Alert, KeyboardAvoidingView, ScrollView, View, Image } from 'react-native';
 import { Container, Button, Text } from 'native-base';
 import Input from '../elements/Input/styled';
-import validate, { alert_validation } from '../elements/Input/validators';
+import validate, { alert_validation, validPhone } from '../elements/Input/validators';
 import validation_string from '../elements/Input/string';
 import { Header } from '../elements';
+import API from '../apis';
+import NavigationService from '../../service/navigate';
 import _ from 'lodash';
-const { width, height } = Dimensions.get('window');
 
 const validations = {
   phone: {
     label: 'Phone',
-    max: 10,
+    min: 10,
+    max: 11,
     required: true,
   }
 };
@@ -27,23 +29,33 @@ export default class forgot extends Component {
         phone: false,
         invitation_code: null,
         password: false,
-        password_confirmation: false,
         check: false,
       },
       frames: false,
       isConnected: true
     };
     this.didUpdateData = this.didUpdateData.bind(this);
-    this.password_confirmation = this.password_confirmation.bind(this);
     this.didPressSubmit = _.debounce(this.didPressSubmit, 2000, { leading: true, trailing: false });
   }
 
-  componentWillMount() {
-
-  }
-
-  componentWillUnmount() {
-
+  async didSubmit() {
+    const { register_info: { phone } } = this.state;
+    this.setState({ loading: true })
+    try {
+      const result = await API.auth.forgot({
+        msisdn: validPhone(phone),
+      })
+      this.setState({ loading: false })
+      if (result.data.statusCode != 200) {
+        const message = result.data && result.data.data && result.data.data.message || 'Lỗi xảy ra, mời bạn thử lại'
+        Toast.show(message)
+        return
+      }
+      NavigationService.navigate('Reset', { phoneNumber: validPhone(phone) })
+    } catch (e) {
+      console.log(e);
+      this.setState({ loading: false })
+    }
   }
 
   render() {
@@ -88,32 +100,20 @@ export default class forgot extends Component {
     );
   }
 
-  password_confirmation() {
-    if (this.state.register_info.password === this.state.register_info.password_confirmation) {
-      return true;
-    } else {
-      return validation_string.default('notmatch');
-    }
-  }
-
   keyboardUpdate(frames) {
     this.setState({ ...this.state, frames });
   }
 
   async didPressSubmit() {
     if (!this.state.isConnected) {
-      Alert.alert('nôn', 'noo');
       return;
     }
     this.setState({ ...this.state, show_validation: true });
     const validation_results = validate(this.state.register_info, validations);
-    if (this.state.register_info.password !== this.state.register_info.password_confirmation) {
-      validation_results.push('notmatch');
-    }
     if (validation_results.length > 0) {
       alert_validation(validation_results);
     } else {
-
+      this.didSubmit();
     }
   }
 

@@ -9,7 +9,8 @@ async function axiosCallApi(url, method = 'get', params, postParamsUrl) {
   };
   if (STG.getData('token') !== null) {
     const userInfo = await STG.getData('token')
-    axiosSetup.headers = { Authorization: `bearer ${(userInfo && userInfo.access_token) || ''}` };
+    const basic = 'YWdyaS1lY29zeXN0ZW0tYXBwOjEyMzQ1NmFB'
+    axiosSetup.headers = { Authorization: userInfo && userInfo.access_token ? `bearer ${(userInfo && userInfo.access_token) || ''}` : `Basic ${basic}` };
   }
   if (method === 'get') {
     axiosSetup.params = params;

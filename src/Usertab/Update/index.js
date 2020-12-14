@@ -5,14 +5,14 @@ import {
 import { Container, Content, Text, Button } from 'native-base';
 import Input from '../../elements/Input/styled';
 import validation_string from '../../elements/Input/string';
-import ImagePicker from 'react-native-image-picker';
 import Toast from 'react-native-simple-toast';
+import validate, { alert_validation } from '../../elements/Input/validators';
+import ImagePicker from 'react-native-image-picker';
 import STG from '../../../service/storage';
 import HOST from '../../apis/host';
 import API from '../../apis';
 import axios from 'axios';
 import { Header } from '../../elements';
-import NavigationService from '../../../service/navigate';
 import _ from 'lodash';
 
 const os = Platform.OS;
@@ -27,8 +27,8 @@ const validations = {
   },
   name: {
     label: 'Name',
-    min: 2,
-    max: 50,
+    // min: 2,
+    // max: 50,
     required: true,
   },
   email: {
@@ -72,21 +72,6 @@ export default class user extends Component {
     this.didPressSubmit = _.debounce(this.didPressSubmit, 500, { leading: true, trailing: false });
   }
 
-  getStatus() {
-    const { approve, deny } = this.state;
-    if (approve && deny) {
-      return [2, 1]
-    } else if (approve && !deny) {
-      return [2]
-    } else if (!approve && deny) {
-      return [1]
-    }
-    return []
-  }
-
-  componentDidMount() {
-  }
-
   componentWillMount() {
     const { register_info } = this.state;
     STG.getData('user').then(userInfo => {
@@ -100,49 +85,76 @@ export default class user extends Component {
     })
   }
 
-  async didPressSubmit() {
+  didPressSubmit() {
+    const { register_info: { password, password_confirmation, password_new } } = this.state
+    const empty = password.length == 0 && password_confirmation.length == 0 && password_new.length == 0
+    this.setState({ ...this.state, show_validation: empty ? false : true });
+    const validation_results = validate(this.state.register_info, validations);
+    if (password.length > 0 || password_confirmation.length > 0 || password_new.length > 0) {
+      if (this.state.register_info.password !== this.state.register_info.password_confirmation) {
+        validation_results.push('Mật khẩu không trùng khớp');
+      }
+      if (validation_results.length > 0) {
+        alert_validation(validation_results);
+      } else {
+        this.didSubmitPass();
+      }
+    } else {
+      this.didPressSubmitUser();
+    }
+  }
+
+  async didSubmitPass() {
+    const { register_info: { password, password_new } } = this.state;
+    this.setState({ loading: true })
+    try {
+      const result = await API.user.updatePassword({
+        passwordNew: password_new,
+        passwordOld: password,
+      })
+      this.setState({ loading: false })
+      if (result.data.statusCode != 200) {
+        const message = result.data && result.data.data && result.data.data.message || 'Lỗi xảy ra, mời bạn thử lại'
+        Toast.show(message)
+        return
+      }
+      this.didPressSubmitUser();
+    } catch (e) {
+      console.log(e);
+      this.setState({ loading: false })
+    }
+  }
+
+  async didPressSubmitUser() {
     const { navigation } = this.props;
     const { register_info, image } = this.state;
-    // const { question, answer, images, crops } = this.state;
-    // if (Object.keys(crops).length == 0) {
-    //   Toast.show('Bạn chưa chọn loại cây trồng')
-    //   return
-    // }
-    // if (question.length == 0) {
-    //   Toast.show('Bạn chưa điền câu hỏi')
-    //   return
-    // }
-    // if (answer.length == 0) {
-    //   Toast.show('Bạn chưa điền bệnh lý câu trồng')
-    //   return
-    // }
-    // if (images.length == 0) {
-    //   Toast.show('Bạn cần chọn ít nhất 1 ảnh')
-    //   return
-    // }
-    if (Object.keys(image).length == 0) {
-      navigation.pop()
+
+    if (register_info.name.length == 0) {
+      Toast.show('Tên tài khoản trống')
       return
     }
+
     const token = await STG.getData('token')
     this.setState({ loading: true })
     var bodyFormData = new FormData();
     bodyFormData.append('fullName', register_info.name);
     bodyFormData.append('pushToken', 'abcd');
     bodyFormData.append('platform', 'ios');
-    bodyFormData.append('avatar', {
-      uri: image.uri,
-      type: '*/*',
-      name: image.fileName,
-      data: image.data,
-    });
+    if (Object.keys(image).length != 0) {
+      bodyFormData.append('avatar', {
+        uri: image.uri,
+        type: '*/*',
+        name: image.fileName,
+        data: image.data,
+      });
+    }
     axios({
       method: 'POST',
-      url: HOST.BASE_URL + '/authapp/update/user',
+      url: HOST.BASE_URL + '/usermanagerment/update/user',
       data: bodyFormData,
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Authorization': 'bearer' + token.access_token,
+        'Authorization': 'bearer ' + token.access_token,
       }
     }).then(r => {
       this.setState({ loading: false })

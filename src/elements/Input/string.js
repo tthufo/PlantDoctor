@@ -22,17 +22,11 @@ const string = {
       case `Phone`:
         return `Số điện thoại không chính xác`;
 
+      case `OTP`:
+        return `Số OTP không hợp lệ`;
+
       case `Password`:
         return `Mật khẩu trống`;
-
-      case `equipment_id`:
-        return `器具名を入力してください。`
-
-      case `serial_number`:
-        return `型番を入力してください。`;
-
-      case `manufacturer_name`:
-        return `製造社名を入力してください。`;
 
       case `token`:
         return `パスコードを入力してください。`;
@@ -40,14 +34,11 @@ const string = {
       case nameParam.currentPassword:
         return `${name}を入力してください。`;
 
-      case `calibration_date`:
-        return `校正年月日を入力してください。`;
-
       case `Name`:
         return `お名前を入力してください。`;
 
       case `Company Name`:
-        return `会社名は、必ず指定してください。`;
+        return `Tên tài khoản trống`;
 
       default:
         return `${name}を入力してください。`;
@@ -56,11 +47,13 @@ const string = {
   max: (length) => (name) => {
     switch (name) {
       case `Password`:
-        return `英数字を含めた4文字以上16文字以下のパスワードを入力してください。`;
+        return `Mật khẩu không hợp lệ`;
       case `Phone`:
         return `Số điện thoại không chính xác`;
+      case `OTP`:
+        return `Số OTP không hợp lệ`;
       case `Company Name`:
-        return `50文字以上の名前を入力してください。`;
+        return `Tên tài khoản không hợp lệ`;
       default:
         return `${name} ${length} 文字以上の名前を入力してください。`;
     }
@@ -71,16 +64,17 @@ const string = {
       case `Name`:
         return `2文字以上の名前を入力してください。`;
       case `Company Name`:
-        return `1文字以上の名前を入力してください。`;
+        return `Tên tài khoản không hợp lệ`;
       case `Phone`:
         return `Số điện thoại không chính xác`;
-
+      case `OTP`:
+        return `Số OTP không hợp lệ`;
       case `Password`:
-        return `英数字を含めた4文字以上16文字以下のパスワードを入力してください。`;
+        return `Mật khẩu không hợp lệ`;
 
       // new password
       case nameParam.newPassword:
-        return `英数字を含めた4文字以上16文字以下のパスワードを入力してください。`;
+        return `Nhập lại mật khẩu không hợp lệ`;
 
       //postal code
       case nameParam.postalCode:
@@ -88,7 +82,7 @@ const string = {
 
       //phone number
       case nameParam.phoneNumber:
-        return `10-11桁の電話番号をハイフン(-)抜きで入力してください。`;
+        return `Số điện thoại không hợp lệ`;
 
       default:
         return `${name} ${length} 文字以上の名前を入力してください。`;

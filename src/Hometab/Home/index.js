@@ -6,13 +6,14 @@ import STG from '../../../service/storage';
 import API from '../../apis';
 import HOST from '../../apis/host';
 import axios from 'axios';
+import Toast from 'react-native-simple-toast';
 import { Header } from '../../elements';
 import IC from '../../elements/icon';
 import NavigationService from '../../../service/navigate';
 import Address from '../../elements/Address';
 import _ from 'lodash';
 import { TouchableHighlight } from 'react-native-gesture-handler';
-import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
+import Menu, { MenuItem } from 'react-native-material-menu';
 
 const CON = ({ image, title, value }) => {
   return (

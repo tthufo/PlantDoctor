@@ -5,6 +5,7 @@ import RootScreen from '../src/Root';
 import LoginScreen from '../src/Login';
 import RegisterScreen from '../src/Register';
 import ForgotScreen from '../src/Forgot';
+import ConfirmScreen from '../src/Confirm';
 
 import TabbarScreen from '../src/Tabbar';
 import TabbarScreen1 from '../src/Tabbar1';
@@ -25,6 +26,7 @@ const AppNavigator = createStackNavigator({
   Login: { screen: LoginScreen },
   Register: { screen: RegisterScreen },
   Forgot: { screen: ForgotScreen },
+  Confirm: { screen: ConfirmScreen },
   Tabbar: {
     screen: TabbarScreen, navigationOptions: {
       gesturesEnabled: false,

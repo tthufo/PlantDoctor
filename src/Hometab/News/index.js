@@ -59,7 +59,6 @@ export default class news extends Component {
 
     const ht = "<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><style>body { font-size: 100%; word-wrap: break-word; overflow-wrap: break-word; margin: 10px }img{max-width:100%;height:auto !important;width:auto !important;};</style></head>"
       + "<body style='margin:0; padding:0;'>" + "<span><img style=\"width:" + widthSize + "!important;height:" + imageSize + "!important;\" src=\"" + imateUrl + "\"><\/span>" + "<h4 style=\"text-align: left; margin-top: 5; color: #4B8266;\"><span><strong>" + (item ? item.titlePost : '') + "</strong></span></h4>" + "<p style=\"text-align: left; margin-top: -15;\"><span>" + (item ? item.summaryPost : '') + "</span></p>" + (item ? item.detailPost : '') + "</body></html>";
-    console.log("==", item.detailPost)
 
     return (
       <Container style={{ backgroundColor: 'white' }}>

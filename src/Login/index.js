@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Platform, ActivityIndicator, TouchableOpacity, SafeAreaView, Image } from 'react-native';
+import { View, StyleSheet, Platform, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import { Container, Content, Button, Text } from 'native-base';
 import GetLocation from 'react-native-get-location'
-// import Geocoder from 'react-native-geocoding';
 import InputStyled from '../elements/Input/styled';
 import validate, { alert_validation, max, min, required, validPhone } from '../elements/Input/validators';
 import Toast from 'react-native-simple-toast';

@@ -1,28 +1,19 @@
 import React, { Component } from 'react';
-import { StyleSheet, Dimensions, Alert, KeyboardAvoidingView, TouchableOpacity, ScrollView, View, Image } from 'react-native';
-import { Container, Title, Button, Text } from 'native-base';
+import { StyleSheet, KeyboardAvoidingView, ActivityIndicator, TouchableOpacity, ScrollView, View, Image } from 'react-native';
+import { Container, Button, Text } from 'native-base';
 import Input from '../elements/Input/styled';
-import validate, { alert_validation } from '../elements/Input/validators';
+import validate, { alert_validation, validPhone } from '../elements/Input/validators';
 import validation_string from '../elements/Input/string';
+import Toast from 'react-native-simple-toast';
+import API from '../apis';
 import { Header } from '../elements';
+import NavigationService from '../../service/navigate';
 import _ from 'lodash';
-const { width, height } = Dimensions.get('window');
 
 const validations = {
   company_name: {
     label: 'Company Name',
     required: true,
-  },
-  name: {
-    label: 'Name',
-    min: 2,
-    max: 50,
-    required: true,
-  },
-  email: {
-    label: 'Email',
-    required: true,
-    email: true,
   },
   password: {
     label: "Password",
@@ -44,15 +35,12 @@ export default class register extends Component {
     this.state = {
       register_info: {
         company_name: false,
-        name: false,
-        email: false,
         phone: false,
-        invitation_code: null,
         password: false,
         password_confirmation: false,
-        check: false,
       },
-      frames: false,
+      check: false,
+      loading: false,
       isConnected: true
     };
     this.didUpdateData = this.didUpdateData.bind(this);
@@ -60,17 +48,30 @@ export default class register extends Component {
     this.didPressSubmit = _.debounce(this.didPressSubmit, 2000, { leading: true, trailing: false });
   }
 
-  componentWillMount() {
-
-  }
-
-  componentWillUnmount() {
-
+  async didSubmit() {
+    const { register_info: { phone, password, company_name } } = this.state;
+    this.setState({ loading: true })
+    try {
+      const result = await API.auth.signUp({
+        fullName: company_name,
+        msisdn: validPhone(phone),
+        password,
+      })
+      this.setState({ loading: false })
+      NavigationService.navigate('Confirm', { phoneNumber: validPhone(phone) });
+      if (result.data.statusCode != 200) {
+        Toast.show('Lỗi xảy ra, mời bạn thử lại')
+        return
+      }
+    } catch (e) {
+      console.log(e);
+      this.setState({ loading: false })
+    }
   }
 
   render() {
     const { navigation } = this.props;
-    const { show_validation, register_info, check } = this.state;
+    const { show_validation, register_info, check, loading } = this.state;
     return (
       <Container>
         <Header navigation={navigation} title={'Đăng ký'} />
@@ -118,6 +119,7 @@ export default class register extends Component {
               testID="password_textfield" label={'Mật khẩu *'} parent={this} group="register_info" linkedkey="password" secureTextEntry unhidden validation={validations.password} showValidation={show_validation}
               value={register_info.password}
               typeSet
+              textContentType="oneTimeCode"
               onChangeText={(text) => {
                 this.setState({
                   register_info: {
@@ -131,6 +133,7 @@ export default class register extends Component {
               testID="confirm_password_textfield" label={'Nhập lại mật khẩu *'} parent={this} group="register_info" linkedkey="password_confirmation" secureTextEntry unhidden validation={() => this.password_confirmation()} showValidation={show_validation}
               value={register_info.password_confirmation}
               typeSet
+              textContentType="oneTimeCode"
               onChangeText={(text) => {
                 this.setState({
                   register_info: {
@@ -151,9 +154,12 @@ export default class register extends Component {
                 <Text style={{ flex: 1, marginLeft: 15, flexWrap: 'wrap', fontSize: 14 }}>{'Đồng ý với các điều khoản của Bác sỹ cây trồng'}</Text>
               </View>
             </TouchableOpacity>
-            <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didPressSubmit()}>
-              <Text style={styles.regularText}>{'Đăng ký'}</Text>
-            </Button>
+            {loading ?
+              <ActivityIndicator size="large" color="#00A7DC" style={{ marginTop: 15 }} />
+              :
+              <Button testID="BTN_SIGN_IN" block primary style={styles.btn_sign_in} onPress={() => this.didPressSubmit()}>
+                <Text style={styles.regularText}>{'Đăng ký'}</Text>
+              </Button>}
             <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
               <TouchableOpacity testID="register_button" style={styles.btn_register} onPress={() => this.props.navigation.pop()}>
                 <Text style={{ color: 'black' }}>{'Bạn đã có tài khoản?'}</Text>
@@ -172,7 +178,7 @@ export default class register extends Component {
     if (this.state.register_info.password === this.state.register_info.password_confirmation) {
       return true;
     } else {
-      return validation_string.default('notmatch');
+      return validation_string.default('Mật khẩu không trùng khớp');
     }
   }
 
@@ -187,12 +193,16 @@ export default class register extends Component {
     this.setState({ ...this.state, show_validation: true });
     const validation_results = validate(this.state.register_info, validations);
     if (this.state.register_info.password !== this.state.register_info.password_confirmation) {
-      validation_results.push('notmatch');
+      validation_results.push('Mật khẩu không trùng khớp');
     }
     if (validation_results.length > 0) {
       alert_validation(validation_results);
     } else {
-
+      if (!this.state.check) {
+        Toast.show('Hãy đồng ý với các điều khoản của ứng dụng.')
+      } else {
+        this.didSubmit();
+      }
     }
   }
 

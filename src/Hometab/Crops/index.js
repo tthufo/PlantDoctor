@@ -46,6 +46,7 @@ export default class crop extends Component {
   }
 
   async getCrops(subscriber) {
+    const forbid = [27, 28, 29, 30, 31, 32]
     var bodyFormData = new FormData();
     const show = await STG.getData('auto')
     const userInfo = await STG.getData('token')
@@ -63,7 +64,7 @@ export default class crop extends Component {
         Toast.show('Lỗi xảy ra, mời bạn thử lại')
         return;
       }
-      const resign = r.data.data.filter(e => show ? (e.cropsId != 27 && e.cropsId != 28) : e).map(e => {
+      const resign = r.data.data.filter(e => show ? !forbid.includes(e.cropsId) : e).map(e => {
         e.check = e.cropsUserId == null ? false : (this.getParam().single ? false : true);
         return e;
       });

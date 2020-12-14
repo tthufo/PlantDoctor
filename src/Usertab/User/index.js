@@ -145,25 +145,27 @@ export default class user extends Component {
     const { userInfo, question, approve, deny, isRefreshing, isActionButtonVisible } = this.state;
     return (
       <Container style={{ backgroundColor: 'white' }}>
-        <Header title={'Tài khoản cá nhân'} renderRight={() => (
-          <Menu
-            ref={this.setMenuRef}
-            button={
-              <TouchableOpacity onPress={() => {
-                this.showMenu()
-              }}>
-                <Image
-                  style={{ width: 30, height: 30 }}
-                  source={require('../../../assets/images/ic_dot_menu.png')}
-                />
-              </TouchableOpacity>
-            }
-          >
-            <MenuItem onPress={this.hideMenu}>Hướng dẫn</MenuItem>
-            <MenuItem onPress={this.hideMenu}>Thông tin</MenuItem>
-            <MenuItem onPress={this.hideMenu}>Chi tiết</MenuItem>
-          </Menu>)
-        } />
+        <Header title={'Tài khoản cá nhân'}
+        // renderRight={() => (
+        //   <Menu
+        //     ref={this.setMenuRef}
+        //     button={
+        //       <TouchableOpacity onPress={() => {
+        //         this.showMenu()
+        //       }}>
+        //         <Image
+        //           style={{ width: 30, height: 30 }}
+        //           source={require('../../../assets/images/ic_dot_menu.png')}
+        //         />
+        //       </TouchableOpacity>
+        //     }
+        //   >
+        //     <MenuItem onPress={this.hideMenu}>Hướng dẫn</MenuItem>
+        //     <MenuItem onPress={this.hideMenu}>Thông tin</MenuItem>
+        //     <MenuItem onPress={this.hideMenu}>Chi tiết</MenuItem>
+        //   </Menu>)
+        // } 
+        />
         <View style={{ flexDirection: 'column', flex: 1 }}>
 
           <View style={{ margin: 10, padding: 5, }}>

@@ -38,7 +38,7 @@ const validations = {
   },
   password: {
     label: "Password",
-    required: true,
+    // required: true,
     // min: 4,
     // max: 16,
   },
@@ -88,10 +88,10 @@ export default class user extends Component {
   didPressSubmit() {
     const { register_info: { password, password_confirmation, password_new } } = this.state
     const empty = password.length == 0 && password_confirmation.length == 0 && password_new.length == 0
-    this.setState({ ...this.state, show_validation: empty ? false : true });
+    this.setState({ ...this.state, show_validation: empty ? true : false });
     const validation_results = validate(this.state.register_info, validations);
     if (password.length > 0 || password_confirmation.length > 0 || password_new.length > 0) {
-      if (this.state.register_info.password !== this.state.register_info.password_confirmation) {
+      if (this.state.register_info.password_new !== this.state.register_info.password_confirmation) {
         validation_results.push('Mật khẩu không trùng khớp');
       }
       if (validation_results.length > 0) {
@@ -120,13 +120,13 @@ export default class user extends Component {
       }
       this.didPressSubmitUser();
     } catch (e) {
-      console.log(e);
+      const message = e.response.data && e.response.data.data && e.response.data.data.message || 'Lỗi xảy ra, mời bạn thử lại'
+      Toast.show(message)
       this.setState({ loading: false })
     }
   }
 
   async didPressSubmitUser() {
-    const { navigation } = this.props;
     const { register_info, image } = this.state;
 
     if (register_info.name.length == 0) {
@@ -364,6 +364,7 @@ export default class user extends Component {
                 label={'Mật khẩu hiện tại *'} parent={this} group="register_info" linkedkey="password" secureTextEntry unhidden validation={validations.password} showValidation={show_validation}
                 value={register_info.password}
                 typeSet
+                textContentType="oneTimeCode"
                 onChangeText={(text) => {
                   this.setState({
                     register_info: {
@@ -377,6 +378,7 @@ export default class user extends Component {
                 label={'Mật khẩu mới *'} parent={this} group="register_info" linkedkey="password_new" secureTextEntry unhidden validation={validations.password} showValidation={show_validation}
                 value={register_info.password_new}
                 typeSet
+                textContentType="oneTimeCode"
                 onChangeText={(text) => {
                   this.setState({
                     register_info: {
@@ -390,6 +392,7 @@ export default class user extends Component {
                 label={'Nhập lại mật khẩu *'} parent={this} group="register_info" linkedkey="password_confirmation" secureTextEntry unhidden validation={() => this.password_confirmation()} showValidation={show_validation}
                 value={register_info.password_confirmation}
                 typeSet
+                textContentType="oneTimeCode"
                 onChangeText={(text) => {
                   this.setState({
                     register_info: {

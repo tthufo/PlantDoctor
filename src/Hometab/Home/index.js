@@ -178,13 +178,6 @@ export default class home extends Component {
     var d = new Date();
     var h = d.getHours();
     const ICON = h <= 19 && h >= 7 ? IC.DAY : IC.NIGHT
-    let data = [{
-      value: 'Banana',
-    }, {
-      value: 'Mango',
-    }, {
-      value: 'Pear',
-    }];
     return (
       <Container style={{ backgroundColor: 'white' }}>
         <Header height={20} />
@@ -192,7 +185,11 @@ export default class home extends Component {
           <View style={{ backgroundColor: '#4B8266', flex: 1, alignItems: 'center', padding: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
             <View style={{ height: 40, width: 40 }} />
             {latLong != null && <Address latLong={latLong} full style={{ fontSize: 20, fontWeight: 'bold', color: 'white', textAlign: 'center' }} />}
-            <Menu
+            <Image
+              style={{ width: 30, height: 30, opacity: 0 }}
+              source={require('../../../assets/images/ic_dot_menu.png')}
+            />
+            {/* <Menu
               ref={this.setMenuRef}
               button={
                 <TouchableOpacity onPress={() => {
@@ -208,7 +205,7 @@ export default class home extends Component {
               <MenuItem onPress={this.hideMenu}>Hướng dẫn</MenuItem>
               <MenuItem onPress={this.hideMenu}>Thông tin</MenuItem>
               <MenuItem onPress={this.hideMenu}>Chi tiết</MenuItem>
-            </Menu>
+            </Menu> */}
           </View>
           <View style={{ backgroundColor: '#4B8266', flex: 1, padding: 10, flexDirection: 'row', justifyContent: 'center' }}>
             {loading ? <ActivityIndicator size="large" color="white" />
